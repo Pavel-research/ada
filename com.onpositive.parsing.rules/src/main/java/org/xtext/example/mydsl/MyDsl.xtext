@@ -1,0 +1,70 @@
+grammar org.xtext.example.mydsl.MyDsl with org.eclipse.xtext.common.Terminals
+
+generate myDsl "http://www.xtext.org/example/mydsl/MyDsl"
+
+
+Model:
+	"classes:"
+	   '['
+	   
+		tokens+=TokenDefinition
+		
+		("," tokens+=TokenDefinition)*
+	   
+	   ']'		 	
+	"functions:"
+	   '['
+	   
+		functions+=Function
+		
+		("," functions+=Function)*
+	   
+	   ']'		 		   
+
+	"layers:"
+	   '['
+	   
+		layers+=Layer
+		
+		("," layers+=Layer)*
+	   
+	   ']'	
+	"rules:"
+	BEGIN 
+	rules+=Rule+
+	END
+;
+
+TransferModel: seq += Call ('=>' seq+=Call  )* ;
+Call:  name= [Function]   '('args= ArgList? ')' (op='?')? ;
+ArgList: a+= PrimaryExpression ( ',' a+=PrimaryExpression) *;
+Name: v= ID ;
+PrimaryExpression: c=Call | c=Name | c=IntLiteral|c=StringLiteral;
+
+IntLiteral: v=INT ;
+StringLiteral: v= STRING;
+
+
+Seq: (seq+= OrExp )+;
+Group: '(' seq=Seq ')' ( op = '+' |op = '?' |op = '*' )?  ;
+OrExp: options+=Element ('|' options+=Element )* ;   
+Element:  val = Assign | val= StringLiteral | val = Group;
+
+Assign: 
+  name = ID  ( op='='|op='+='|op='*=') val=[TokenDefinition];
+
+TokenDefinition:  name=ID;
+Function:  name=ID;
+Layer:  name=ID;  
+Rule:
+	name=ID ":"
+		BEGIN
+		'when:' condition=Seq
+		'then:' thenPart=TransferModel
+		'example:' example=STRING
+		('layer:' layer=[Layer])?
+		END;
+
+// The following synthetic tokens are used for the indentation-aware blocks
+terminal BEGIN: 'synthetic:BEGIN';  // increase indentation
+terminal END: 'synthetic:END';      // decrease indentation
