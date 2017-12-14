@@ -8,7 +8,7 @@ import com.onpositive.model.IProperty;
 
 public class PropertyFilter implements IClause {
 
-	enum PropertyFilterMode {
+	public enum PropertyFilterMode {
 		HAS_GREATER, HAS_LESS, HAS_ANY, HAS_ALL, HAS_NOT_ANY, HAS_NOT_ALL, COUNT_GREATER, COUNT_LESS, COUNT_EQUAL,
 	}
 
@@ -21,6 +21,18 @@ public class PropertyFilter implements IClause {
 		this.prop = prop;
 		this.predicate = predicate;
 		this.mode = mode;
+	}
+	
+	public IProperty property(){
+		return prop;		
+	}
+	
+	public ISelector predicate(){
+		return predicate;
+	}
+	
+	public PropertyFilterMode mode(){
+		return mode;
 	}
 
 	@Clause("FILTER")

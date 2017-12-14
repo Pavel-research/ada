@@ -12,6 +12,10 @@ public class MapByProperty implements IClause{
 		super();
 		this.property = property;
 	}
+	
+	public IProperty property(){
+		return this.property;
+	}
 
 	@Override
 	public ISelector produce(ISelector s) {

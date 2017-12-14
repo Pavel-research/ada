@@ -4,11 +4,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.onpositive.clauses.ICompositeSelector;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.IType;
 
-public class OrSelector implements ISelector {
+public class OrSelector implements ICompositeSelector {
 
 	@Override
 	public String toString() {
@@ -76,5 +77,10 @@ public class OrSelector implements ISelector {
 			return Multiplicity.SINGLE;
 		}
 		return Multiplicity.UNKNOWN;
+	}
+
+	@Override
+	public Set<ISelector> members() {
+		return selector;
 	}
 }

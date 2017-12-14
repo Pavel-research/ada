@@ -19,6 +19,7 @@ classTerms:
       - forks
       - watchers
       - stargazers_count
+      - issues
   Organization:
     extends: NamedEntity
   Label:
@@ -58,13 +59,13 @@ propertyTerms:
   user:
     range: User
     extends: creator
-    sameAs: [ created_by, opened_by, filed_by ]
+    # sameAs: [ created_by, opened_by, filed_by ]
   assignee:
     range: User
-    sameAs: [ assigned_to ]
+    # sameAs: [ assigned_to ]
   company:
     range: string
-    sameAs: [from_company,companies,from]
+    # sameAs: [from_company,companies,from]
   labels:
     range: Label
   closed_by:
@@ -73,16 +74,18 @@ propertyTerms:
     range: string
   stargazers_count:
     range: integer
-    sameAs: [ stars , count_of_stars]
+    # sameAs: [ stars , count_of_stars]
   milestone:
     range: Milestone
   created_at:
-    sameAs: [ creation_time,time_of_creation]
+    # sameAs: [ creation_time,time_of_creation]
     range: datetime
   updated_at:
     range: datetime
   state:
     range: string
+  issues: 
+    range: Issue  
   title:
     extends: name
   avatar_url:

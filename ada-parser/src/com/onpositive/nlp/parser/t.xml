@@ -1,0 +1,4 @@
+<rules>
+	<rule id="a" source="n=selector 'or' n1=selector">
+	</rule>
+</rules>

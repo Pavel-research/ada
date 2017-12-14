@@ -12,6 +12,7 @@ public final class ClauseSelector implements ISelector{
 	protected final Multiplicity multiplicity;
 	protected final IClause clause;
 	
+	
 	public ClauseSelector(ISelector parent, IType type, Multiplicity multiplicity, IClause clause) {
 		super();
 		this.parent = parent;
@@ -19,7 +20,14 @@ public final class ClauseSelector implements ISelector{
 		this.multiplicity = multiplicity;
 		this.clause = clause;
 	}
-
+	
+	public IClause clause(){
+		return clause;
+	}
+	public ISelector parent(){
+		return parent;
+	}
+	
 	@Override
 	public IType domain() {
 		return type;

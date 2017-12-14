@@ -1,0 +1,12 @@
+number of issues
+number of #232
+
+
+authors of open issues
+numbers of open issues
+
+
+issues numbers
+
+issues by        
+issues by author

@@ -24,7 +24,7 @@ public class Property extends HasMeta<Property> implements IProperty{
 
 	@Override
 	public String name() {
-		return this.id;
+		return this.name;
 	}
 
 	@Override
@@ -36,5 +36,12 @@ public class Property extends HasMeta<Property> implements IProperty{
 	public IType range() {
 		return range;
 	}
+
+	@Override
+	public String id() {
+		return name;
+	}
+
+	
 
 }

@@ -7,12 +7,17 @@ import com.onpositive.model.Builtins;
 
 public class Aggregators implements IClause{
 
-	static enum Mode{
+	public static enum Mode{
 		COUNT,MIN,MAX,AVG,SUM
 	}
 	
 	protected Mode mode;
 	
+	public Mode getMode() {
+		return mode;
+	}
+
+
 	public Aggregators(Mode mode) {
 		super();
 		this.mode = mode;

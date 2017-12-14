@@ -31,25 +31,25 @@ public class VocabularyLoader {
 		EntityClass ec=new EntityClass(id,t.getName());
 		classes.put(id, ec);
 		t.getDeclaredProperties().forEach(p->{
-			ec.addProperty(toProperty(p));
+			ec.addProperty(toProperty(p,ec));
 		});
 		t.getSuperTypes().forEach(st->{
-			ec.addParent(toClass(t));
+			ec.addParent(toClass(st));
 		});
 		return ec;
 	}
 
-	private Property toProperty(PropertyTerm p) {
-		String id = p.getVocabulary().getBase()+p.getName();
+	private Property toProperty(PropertyTerm p,EntityClass cl) {
+		String id = p.getVocabulary().getBase()+p.getName()+cl.id;
 		if (props.containsKey(id)){
 			return props.get(id);
 		}
 		DataType range = p.getRange();
-		Property pr=new Property(id,p.getName(), null, toType(range));
+		Property pr=new Property(id,p.getName(), cl, toType(range));
 		props.put(id, pr);
 		PropertyTerm superProperty = p.getSuperProperty();
 		if (superProperty!=null){
-			pr.addParent(toProperty(superProperty));
+			pr.addParent(toProperty(superProperty,cl));
 		}
 		return pr;
 	}

@@ -51,6 +51,9 @@ public class SingleSelector implements ISelector {
 		this.value = value;
 		this.type = tp;
 	}
+	public Object getValue(){
+		return value;
+	}
 
 	@Override
 	public IType domain() {

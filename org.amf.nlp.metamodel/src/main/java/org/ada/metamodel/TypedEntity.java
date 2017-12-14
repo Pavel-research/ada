@@ -24,4 +24,8 @@ public class TypedEntity implements ITypedEntity{
 	public IClass type() {
 		return clazz;
 	}
+	@Override
+	public String toString() {
+		return entity.iri();
+	}
 }

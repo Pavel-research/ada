@@ -1,0 +1,20 @@
+classes: [ selector ]
+functions: [and,or,countCompare]
+layers: [initial]
+rules:
+ or:
+  when: s+=selector ( "or" s+=selector )*
+  then: or(s)
+  example: "Denis or Mike"  
+ and:
+  when: s+=selector ( "and" s+=selector )*
+  then: and(s)
+  example: "Denis or Mike and Gleb or Boris"
+ moreThen:
+  when: "more" "then" s=selector
+  then: countCompare(s,">")
+  example: "more then 5"
+ moreThen:
+  when: "less" "then" s=selector
+  then: countCompare(s,"<")
+  example: "less then 5"

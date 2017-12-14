@@ -4,11 +4,12 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.onpositive.clauses.ICompositeSelector;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.IType;
 
-public class AndSelector implements ISelector {
+public class AndSelector implements ICompositeSelector {
 
 	@Override
 	public int hashCode() {
@@ -47,7 +48,7 @@ public class AndSelector implements ISelector {
 	}
 
 	@Clause("and")
-	public static ISelector or(List<ISelector> prop) {
+	public static ISelector and(List<ISelector> prop) {
 		LinkedHashSet<ISelector> s = new LinkedHashSet<>(prop);
 		if (s.size() == 1) {
 			return s.iterator().next();
@@ -69,5 +70,10 @@ public class AndSelector implements ISelector {
 			return Multiplicity.SINGLE;
 		}
 		return Multiplicity.UNKNOWN;
+	}
+
+	@Override
+	public Set<ISelector> members() {
+		return selector;
 	}
 }
