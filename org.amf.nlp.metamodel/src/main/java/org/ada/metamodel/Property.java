@@ -42,6 +42,9 @@ public class Property extends HasMeta<Property> implements IProperty{
 		return name;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "P:"+name;
+	}
 
 }

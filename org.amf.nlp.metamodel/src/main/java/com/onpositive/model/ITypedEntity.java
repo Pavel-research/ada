@@ -1,8 +1,12 @@
 package com.onpositive.model;
 
-public interface ITypedEntity {
+import com.onpositive.nlp.lexer.IHasKind;
+
+public interface ITypedEntity extends IHasKind{
 
 	String id();
 	
 	IClass type();
+
+	String name();
 }

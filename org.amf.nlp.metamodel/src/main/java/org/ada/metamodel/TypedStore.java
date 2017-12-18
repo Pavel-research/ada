@@ -1,5 +1,6 @@
 package org.ada.metamodel;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -11,6 +12,8 @@ import java.util.stream.Collectors;
 import org.raml.store.IResolvableEntityType;
 import org.raml.store.Store;
 import org.raml.store.StoreEntity;
+import org.raml.store.StoreManager;
+import org.raml.vocabularies.Vocabulary;
 
 import com.onpositive.clauses.IClause;
 import com.onpositive.clauses.ICompositeSelector;
@@ -27,6 +30,7 @@ import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 import com.onpositive.model.ITypedEntity;
 import com.onpositive.model.ITypedStore;
+import com.onpositive.model.IUniverse;
 
 public class TypedStore implements ITypedStore {
 
@@ -39,6 +43,13 @@ public class TypedStore implements ITypedStore {
 		this.ts = ts;
 		this.storePrefix = storePrefix;
 		this.universe = universe;
+	}
+
+	public static ITypedStore getDebugInstance() throws IOException{
+		Store st=StoreManager.getDebugStore();
+		Universe loadFrom = new VocabularyLoader().loadFrom(new Vocabulary(Universe.class.getResource("/definition.yaml")));
+		TypedStore typedStore = new TypedStore(st, loadFrom,"http://github.org/model#");
+		return typedStore;
 	}
 
 	protected ArrayList<ITypedEntity> all;
@@ -233,5 +244,10 @@ public class TypedStore implements ITypedStore {
 
 		}
 		return null;
+	}
+
+	@Override
+	public IUniverse universe() {
+		return universe;
 	}
 }

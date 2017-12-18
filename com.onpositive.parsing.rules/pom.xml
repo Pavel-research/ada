@@ -238,6 +238,16 @@
 			<version>${xtextVersion}</version>
 			<optional>true</optional>
 		</dependency>
+		<dependency>
+			<groupId>org.amf</groupId>
+			<artifactId>ada-parser</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>org.amf.nlp</groupId>
+			<artifactId>org.amf.nlp.metamodel</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
+		</dependency>
 	</dependencies>
 	<version>1.0.0-SNAPSHOT</version>
 	<groupId>com.onpositive.parsing.rules</groupId>

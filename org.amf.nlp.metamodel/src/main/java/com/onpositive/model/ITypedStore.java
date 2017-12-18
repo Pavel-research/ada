@@ -11,4 +11,6 @@ public interface ITypedStore {
 	IType get(String name);
 
 	Collection<Object>execute(ISelector selector);
+
+	IUniverse universe();
 }

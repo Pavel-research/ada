@@ -3,8 +3,11 @@ package org.ada.metamodel;
 import java.util.Collection;
 import java.util.HashMap;
 
+import com.onpositive.model.IClass;
+import com.onpositive.model.IUniverse;
 
-public class Universe extends HasMeta<Universe>{
+
+public class Universe extends HasMeta<Universe> implements IUniverse{
 
 	public Universe(String id) {
 		super(id,"");
@@ -12,7 +15,10 @@ public class Universe extends HasMeta<Universe>{
 
 	protected HashMap<String,EntityClass>types=new HashMap<String, EntityClass>();
 
-	public Collection<EntityClass>classes(){
-		return types.values();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public Collection<IClass>classes(){
+		return (Collection)types.values();
 	}
+
+
 }

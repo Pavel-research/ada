@@ -26,6 +26,20 @@ public class TypedEntity implements ITypedEntity{
 	}
 	@Override
 	public String toString() {
-		return entity.iri();
+		return "E:"+name();
+	}
+
+	@Override
+	public String name() {
+		Object property = entity.property("name");
+		if (property!=null){
+			return property.toString();
+		}
+		return id();
+	}
+
+	@Override
+	public String kind() {
+		return clazz.id;
 	}
 }
