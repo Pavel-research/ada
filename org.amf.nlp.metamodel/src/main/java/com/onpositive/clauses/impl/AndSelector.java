@@ -1,12 +1,16 @@
 package com.onpositive.clauses.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.ICompositeSelector;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
+import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
 public class AndSelector implements ICompositeSelector {
@@ -75,5 +79,15 @@ public class AndSelector implements ICompositeSelector {
 	@Override
 	public Set<ISelector> members() {
 		return selector;
+	}
+
+	@Override
+	public List<? extends IParsedEntity> children() {
+		return new ArrayList<>(selector);
+	}
+
+	@Override
+	public List<IProperty> usedProperties() {
+		return Collections.emptyList();
 	}
 }

@@ -24,7 +24,6 @@ import com.onpositive.clauses.impl.AndSelector;
 import com.onpositive.clauses.impl.ClauseSelector;
 import com.onpositive.clauses.impl.MapByProperty;
 import com.onpositive.clauses.impl.PropertyFilter;
-import com.onpositive.clauses.impl.PropertyFilter.PropertyFilterMode;
 import com.onpositive.clauses.impl.SingleSelector;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
@@ -112,7 +111,7 @@ public class TypedStore implements ITypedStore {
 			return object;
 		} else if (selector instanceof SingleSelector) {
 			SingleSelector sl = (SingleSelector) selector;
-			return Collections.singleton(sl.getValue());
+			return sl.getValue();
 		} else if (selector instanceof AllInstancesOf) {
 			return allInstances().stream().filter(x -> x.type().isSubtypeOf(selector.domain()))
 					.collect(Collectors.toList());
@@ -144,13 +143,13 @@ public class TypedStore implements ITypedStore {
 				return execute.stream().map(x -> getValue(x, property)).collect(Collectors.toList());
 			} else if (clause instanceof PropertyFilter) {
 				PropertyFilter pf = (PropertyFilter) clause;
-				ISelector predicate = pf.predicate();
-				IProperty property = pf.property();
-				PropertyFilterMode mode = pf.mode();
-				Collection<Object> values = execute(predicate);
-				LinkedHashSet<Object> fvalues = new LinkedHashSet<>(values);
-				return execute.stream().filter(x -> filter(getValue(x, property), mode, fvalues))
-						.collect(Collectors.toList());
+//				ISelector predicate = pf.predicate();
+//				IProperty property = pf.property();
+//				PropertyFilterMode mode = pf.mode();
+//				Collection<Object> values = execute(predicate);
+//				LinkedHashSet<Object> fvalues = new LinkedHashSet<>(values);
+//				return execute.stream().filter(x -> filter(getValue(x, property), mode, fvalues))
+//						.collect(Collectors.toList());
 			} else {
 				throw new IllegalStateException("Unknown clause:" + cl);
 			}
@@ -158,54 +157,54 @@ public class TypedStore implements ITypedStore {
 		return null;
 	}
 
-	boolean filter(Object obj, PropertyFilterMode mode, Collection<Object> args) {
-		Collection<Object> collection = toCollection(obj);
-		switch (mode) {
-		case COUNT_EQUAL:
-			int nm = toNumb(args);
-			return collection.size() == nm;
-		case COUNT_GREATER:
-			nm = toNumb(args);
-			return collection.size() > nm;
-		case COUNT_LESS:
-			nm = toNumb(args);
-			return collection.size() < nm;
-		case HAS_ALL:
-			for (Object o:args){
-				if (!collection.contains(o)){
-					return false;
-				}
-			}
-			return true;
-		case HAS_ANY:
-			for (Object o:args){
-				if (collection.contains(o)){
-					return true;
-				}
-			}
-		case HAS_GREATER:
-			throw new UnsupportedOperationException();
-		case HAS_LESS:
-			throw new UnsupportedOperationException();
-		case HAS_NOT_ALL:
-			for (Object o:args){
-				if (collection.contains(o)){
-					return false;
-				}
-			}
-			return true;
-		case HAS_NOT_ANY:
-			for (Object o:args){
-				if (collection.contains(o)){
-					return false;
-				}
-			}
-			return true;
-		default:
-			break;
-		}
-		return false;
-	}
+//	boolean filter(Object obj, PropertyFilterMode mode, Collection<Object> args) {
+//		Collection<Object> collection = toCollection(obj);
+//		switch (mode) {
+//		case COUNT_EQUAL:
+//			int nm = toNumb(args);
+//			return collection.size() == nm;
+//		case COUNT_GREATER:
+//			nm = toNumb(args);
+//			return collection.size() > nm;
+//		case COUNT_LESS:
+//			nm = toNumb(args);
+//			return collection.size() < nm;
+//		case HAS_ALL:
+//			for (Object o:args){
+//				if (!collection.contains(o)){
+//					return false;
+//				}
+//			}
+//			return true;
+//		case HAS_ANY:
+//			for (Object o:args){
+//				if (collection.contains(o)){
+//					return true;
+//				}
+//			}
+//		case HAS_GREATER:
+//			throw new UnsupportedOperationException();
+//		case HAS_LESS:
+//			throw new UnsupportedOperationException();
+//		case HAS_NOT_ALL:
+//			for (Object o:args){
+//				if (collection.contains(o)){
+//					return false;
+//				}
+//			}
+//			return true;
+//		case HAS_NOT_ANY:
+//			for (Object o:args){
+//				if (collection.contains(o)){
+//					return false;
+//				}
+//			}
+//			return true;
+//		default:
+//			break;
+//		}
+//		return false;
+//	}
 
 	@SuppressWarnings("unchecked")
 	private Collection<Object> toCollection(Object obj) {

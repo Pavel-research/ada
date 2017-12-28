@@ -2,6 +2,7 @@ package com.onpositive.nlp.parser;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public interface SyntacticPredicate {
 
@@ -23,4 +24,6 @@ public interface SyntacticPredicate {
 	default SyntacticPredicate then(String... t){
 		return then(text(t));
 	}
+	
+	void gatherLiterals(Consumer<String>c);
 }

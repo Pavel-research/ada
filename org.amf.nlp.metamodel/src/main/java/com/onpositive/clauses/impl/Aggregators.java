@@ -1,9 +1,14 @@
 package com.onpositive.clauses.impl;
 
+import java.util.Collections;
+import java.util.List;
+
+import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.IClause;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.Builtins;
+import com.onpositive.model.IProperty;
 
 public class Aggregators implements IClause{
 
@@ -25,12 +30,17 @@ public class Aggregators implements IClause{
 	
 	
 	@Override
+	public String toString() {
+		return mode.toString();
+	}
+	
+	@Override
 	public ISelector produce(ISelector s) {
 		if (s.multiplicity()==Multiplicity.SINGLE){
 			return null;
 		}
 		if (mode==Mode.COUNT){
-			return new ClauseSelector(s, Builtins.INTEGER, Multiplicity.SINGLE, this);
+			return ClauseSelector.produce(s, Builtins.INTEGER, Multiplicity.SINGLE, this);
 		}
 		if (!s.domain().isOrdered()){
 			return null;
@@ -40,7 +50,7 @@ public class Aggregators implements IClause{
 				return null;
 			}	
 		}
-		return new ClauseSelector(s, s.domain(), Multiplicity.SINGLE, this);
+		return ClauseSelector.produce(s, s.domain(), Multiplicity.SINGLE, this);
 	}
 	
 	@Clause("COUNT")
@@ -53,5 +63,16 @@ public class Aggregators implements IClause{
 	public static final Aggregators SUM=new Aggregators(Mode.SUM);
 	@Clause("AVERAGE")
 	public static final Aggregators AVG=new Aggregators(Mode.AVG);
+
+	@Override
+	public List<? extends IParsedEntity> children() {
+		return Collections.emptyList();
+	}
+
+
+	@Override
+	public List<IProperty> usedProperties() {
+		return Collections.emptyList();
+	}
 
 }

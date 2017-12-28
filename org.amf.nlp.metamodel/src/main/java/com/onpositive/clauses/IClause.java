@@ -1,8 +1,9 @@
 package com.onpositive.clauses;
 
-public interface IClause {
+import com.ada.model.IParsedEntity;
+
+public interface IClause  extends IParsedEntity{
 	
 	ISelector produce(ISelector s);
 
-	
 }

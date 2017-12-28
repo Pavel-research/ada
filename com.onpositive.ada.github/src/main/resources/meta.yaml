@@ -1,0 +1,11 @@
+properties:
+  user: 
+    sameAs:  [ created ]
+  commentsNumber:
+    sameAs:  [ comments ]  
+  stargazers_count:
+    sameAs:  [ stars ]
+  created_by:
+    related: [created_at ]
+  closed_by:
+    related: [ closed_at ]      

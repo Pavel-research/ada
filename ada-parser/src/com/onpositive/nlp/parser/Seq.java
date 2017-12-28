@@ -3,6 +3,7 @@ package com.onpositive.nlp.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Seq implements SyntacticPredicate{
 
@@ -47,6 +48,10 @@ public class Seq implements SyntacticPredicate{
 	
 	public SyntacticPredicate get(int pos){
 		return preds.get(0);
+	}
+	@Override
+	public void gatherLiterals(Consumer<String> c) {
+		preds.forEach(m->m.gatherLiterals(c));
 	}
 	
 }

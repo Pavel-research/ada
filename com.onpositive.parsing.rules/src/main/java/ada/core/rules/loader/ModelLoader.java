@@ -26,9 +26,20 @@ import org.xtext.example.mydsl.myDsl.Seq;
 import org.xtext.example.mydsl.myDsl.StringLiteral;
 import org.xtext.example.mydsl.myDsl.TransferModel;
 
+import com.ada.model.Comparative;
+import com.ada.model.Comparison;
+import com.ada.model.GenericTime;
+import com.ada.model.IScalarWithDimension;
+import com.ada.model.Measure;
+import com.ada.model.Preposition;
+import com.ada.model.conditions.IHasDomain;
 import com.google.inject.Injector;
+import com.onpositive.clauses.IClause;
 import com.onpositive.clauses.ISelector;
+import com.onpositive.clauses.impl.AllInstancesOf;
 import com.onpositive.clauses.impl.Clauses;
+import com.onpositive.clauses.impl.SingleSelector;
+import com.onpositive.model.IProperty;
 import com.onpositive.nlp.parser.AllMatchParser;
 import com.onpositive.nlp.parser.SyntacticMatch;
 import com.onpositive.nlp.parser.SyntacticPredicate;
@@ -42,6 +53,18 @@ public class ModelLoader {
 
 	public ModelLoader() {
 		tc.put("selector", ISelector.class);
+		tc.put("property", IProperty.class);
+		tc.put("clause", IClause.class);
+		tc.put("number", Number.class);
+		tc.put("className", AllInstancesOf.class);
+		tc.put("entity", SingleSelector.class);
+		tc.put("preposition", Preposition.class);
+		tc.put("comparative", Comparative.class);
+		tc.put("measure", Measure.class);
+		tc.put("hasDomain", IHasDomain.class);
+		tc.put("comparison", Comparison.class);
+		tc.put("named_date", GenericTime.class);
+		tc.put("dim_scalar", IScalarWithDimension.class);
 	}
 	
 	public static AllMatchParser<Object> load(URI path){
@@ -137,8 +160,8 @@ public class ModelLoader {
 		} else if (c instanceof StringLiteral) {
 			String value = (((StringLiteral) c).getV());
 			return m -> value;
-		} else if (r instanceof Call) {
-			return transformCall((Call) r);
+		} else if (c instanceof Call) {
+			return transformCall((Call) c);
 		}
 		throw new IllegalStateException();
 	}
@@ -163,7 +186,7 @@ public class ModelLoader {
 				String token = ((Assign) val).getVal().getName();
 				Class<?> class1 = tc.get(token);
 				if (class1 == null) {
-					throw new IllegalStateException();
+					throw new IllegalStateException(token);
 				}
 				options.add(SyntacticPredicate.assign(name, class1));
 			} else if (val instanceof StringLiteral) {

@@ -3,11 +3,22 @@ package com.onpositive.nlp.parser;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
 public class AllMatchParser<T> {
+
+	private static boolean DEBUG = false;
+
+	public static boolean isDEBUG() {
+		return DEBUG;
+	}
+
+	public static void setDEBUG(boolean dEBUG) {
+		DEBUG = dEBUG;
+	}
 
 	ArrayList<IRule<T>> rules = new ArrayList<>();
 
@@ -17,8 +28,32 @@ public class AllMatchParser<T> {
 
 	@SuppressWarnings("unchecked")
 	public void add(IRule<? extends T> r) {
-		
+
 		this.rules.add((IRule<T>) r);
+	}
+
+	public void merge(AllMatchParser<T> parser) {
+		this.rules.addAll(parser.rules);
+		parser.layers.keySet().forEach(k -> {
+			ArrayList<IRule<T>> arrayList = layers.get(k);
+			if (arrayList == null) {
+				arrayList = new ArrayList<>();
+				layers.put(k, arrayList);
+			}
+			arrayList.addAll(parser.layers.get(k));
+		});
+		parser.layersPriorities.forEach(l -> {
+			if (!layersPriorities.contains(l)) {
+				layersPriorities.add(l);
+			}
+		});
+	}
+
+	public HashSet<String> literals() {
+		HashSet<String> res = new HashSet<>();
+		rules.forEach(r -> r.gatherLiterals(m -> res.add(m)));
+		layers.values().forEach(r -> r.forEach(rr -> rr.gatherLiterals(m -> res.add(m))));
+		return res;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -32,33 +67,73 @@ public class AllMatchParser<T> {
 	}
 
 	public Collection<List<T>> parse(List<T> t) {
+		Collection<List<T>> newStack;
+		Collection<List<T>> currentStack = parseUC(t);
+
+		Collection<List<T>> filterMin = filterMin(t, currentStack);
+		newStack = new LinkedHashSet<>();
+
+		for (List<T> v : filterMin) {
+			if (v.size() < t.size() && v.size() > 1) {
+				newStack.addAll(parse(v));
+			} else if (v.size() == 1) {
+				newStack.add(v);
+			}
+		}
+		if (newStack.isEmpty()) {
+			return filterMin;
+		}
+		return filterMin(t, newStack);
+	}
+
+	private Collection<List<T>> parseUC(List<T> t) {
+
 		Collection<List<T>> currentStack = new ArrayList<>();
 		currentStack.add(t);
-		
+		for (int i = 1; i < t.size(); i++) {
+			if (t.get(i) instanceof ISplitPoint) {
+				ISplitPoint mm = (ISplitPoint) t.get(i);
+				List<T> subList = t.subList(mm.includes() ? i : i + 1, t.size());
+				if (subList.size() > 1) {
+					Collection<List<T>> parse = parse(subList);
+					if (parse.size() == 1 && ((List) parse.iterator().next()).size() == 1) {
+						ArrayList<T> mn = new ArrayList<>();
+						mn.addAll(t.subList(0, i));
+						if (!mm.includes()) {
+							mn.add(t.get(i));
+						}
+						mn.addAll((List) parse.iterator().next());
+						currentStack.add(mn);
+					}
+				}
+			}
+		}
 		for (String s : layersPriorities) {
 			Collection<List<T>> newStack = new ArrayList<>();
-			for (List<T>v:currentStack){
+			for (List<T> v : currentStack) {
 				ArrayList<IRule<T>> rules2 = layers.get(s);
-				if (rules2!=null){
+				if (rules2 != null) {
 					Collection<List<T>> proceed = proceed(v, rules2);
 					newStack.addAll(proceed);
 				}
 			}
-			currentStack=newStack;
+			if (!newStack.isEmpty()) {
+				currentStack = newStack;
+			}
 		}
 		ArrayList<IRule<T>> rules2 = rules;
-		Collection<List<T>> newStack = new ArrayList<>();
+		Collection<List<T>> newStack = new LinkedHashSet<>();
 		if (currentStack.isEmpty()) {
 			currentStack.add(t);
 		}
-		for (List<T>v:currentStack){			
-			if (rules2!=null){
+		for (List<T> v : currentStack) {
+			if (rules2 != null) {
 				Collection<List<T>> proceed = proceed(v, rules2);
 				newStack.addAll(proceed);
 			}
 		}
-		currentStack=newStack;
-		return filterMin(t, currentStack);
+		currentStack = newStack;
+		return currentStack;
 	}
 
 	private Collection<List<T>> proceed(List<T> t, ArrayList<IRule<T>> rules2) {
@@ -83,21 +158,24 @@ public class AllMatchParser<T> {
 
 	public static <T> List<List<T>> parse(List<T> t, IRule<T> rule) {
 		int size = t.size();
+
 		ArrayList<List<T>> sm = new ArrayList<List<T>>();
-		for (int i = 0; i < size; i++) {
+		for (int i = size - 1; i >= 0; i--) {
 			RuleResult<T> consume = rule.consume(t, i);
 			if (consume != null) {
 				ArrayList<T> rs = new ArrayList<T>(t.subList(0, i));
 				rs.add(consume.value);
 				rs.addAll(t.subList(i + consume.len, t.size()));
 				sm.add(rs);
+
 			}
 		}
 
 		return sm;
 	}
 
-	public static <T> Collection<List<T>> parseRules(List<T> val, List<IRule<T>> rules) {
+	@SuppressWarnings("unchecked")
+	public <T> Collection<List<T>> parseRules(List<T> val, List<IRule<T>> rules) {
 		LinkedHashSet<List<T>> sm = new LinkedHashSet<List<T>>();
 		rules.forEach(r -> {
 			sm.addAll(parse(val, r));
@@ -105,9 +183,11 @@ public class AllMatchParser<T> {
 		LinkedHashSet<List<T>> res = new LinkedHashSet<>();
 		if (sm.size() > 0) {
 			sm.forEach(v -> {
-				Collection<List<T>> production = parseRules(v, rules);
+				@SuppressWarnings("rawtypes")
+				Collection<List<T>> production = new LinkedHashSet<>((Collection) parseUC((List) v));
 				if (production.size() > 0) {
 					res.addAll(production);
+
 				} else {
 					res.add(v);
 				}
@@ -118,26 +198,7 @@ public class AllMatchParser<T> {
 	}
 
 	public void setLayers(ArrayList<String> ln) {
-		this.layersPriorities=ln;
+		this.layersPriorities = ln;
 	}
 
-	// public static void main(String[] args) {
-	// IRule<String>rule=(v,i)->{
-	// if (i<v.size()-1&&v.get(i).equals("A")&&v.get(i+1).equals("A")){
-	// return new RuleResult<String>("B", 2);
-	// }
-	// return null;
-	// };
-	// IRule<String>rule1=(v,i)->{
-	// if (i<v.size()-1&&v.get(i).equals("B")&&v.get(i+1).equals("B")){
-	// return new RuleResult<String>("C", 2);
-	// }
-	// return null;
-	// };
-	// @SuppressWarnings("unchecked")
-	// List<IRule<String>> asList = Arrays.asList(new IRule[]{rule,rule1});
-	// Collection<List<String>> vs = parseRules(Arrays.asList(new
-	// String[]{"A","A","A","A","A","A","A","A","A","A","A","A","A","A","A","A"}),asList);
-	// System.out.println(vs.size());
-	// }
 }

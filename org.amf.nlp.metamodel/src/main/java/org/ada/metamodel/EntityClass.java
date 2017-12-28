@@ -22,6 +22,11 @@ public class EntityClass extends HasMeta<EntityClass> implements IClass{
 	}
 
 	@Override
+	public String toString() {
+		return "C:"+name;
+	}
+	
+	@Override
 	public boolean isSummable() {
 		return false;
 	}
@@ -41,7 +46,7 @@ public class EntityClass extends HasMeta<EntityClass> implements IClass{
 	
 	@Override
 	public String name() {
-		return this.id;
+		return this.name;
 	}
 
 	@Override

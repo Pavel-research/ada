@@ -26,8 +26,7 @@ classTerms:
     extends: NamedEntity
   User:
     extends: NamedEntity
-    properties:
-      - created
+    properties:    
       - company
   Issue:
     extends: NamedEntity
@@ -37,6 +36,7 @@ classTerms:
       - labels
       - closed_at
       - closed_by
+      - created_by
       - user
       - assignee
       - state
@@ -68,6 +68,8 @@ propertyTerms:
     # sameAs: [from_company,companies,from]
   labels:
     range: Label
+  created_by:
+    range: User  
   closed_by:
     range: User
   name:

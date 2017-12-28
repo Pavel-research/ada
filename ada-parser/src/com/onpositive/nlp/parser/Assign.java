@@ -3,6 +3,7 @@ package com.onpositive.nlp.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class Assign implements SyntacticPredicate {
 
@@ -16,6 +17,9 @@ public class Assign implements SyntacticPredicate {
 
 	@SuppressWarnings("unchecked")
 	public int tryParse(List<?>v,int pos,HashMap<String,Object>vars){
+		if (pos>=v.size()){
+			return  -1;
+		}
 		Object obj = v.get(pos);
 		if (val.isInstance(obj)){
 			Object m=vars.get(name);
@@ -39,5 +43,10 @@ public class Assign implements SyntacticPredicate {
 			}
 		}
 		return -1;
+	}
+
+	@Override
+	public void gatherLiterals(Consumer<String> c) {
+		
 	}
 }

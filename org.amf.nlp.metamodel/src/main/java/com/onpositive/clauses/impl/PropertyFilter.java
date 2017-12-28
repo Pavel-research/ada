@@ -1,70 +1,100 @@
 package com.onpositive.clauses.impl;
 
+import java.util.Collections;
+import java.util.List;
+
+import com.ada.model.IParsedEntity;
+import com.ada.model.conditions.IHasDomain;
 import com.onpositive.clauses.IClause;
+import com.onpositive.clauses.IComparison;
 import com.onpositive.clauses.ISelector;
-import com.onpositive.clauses.Multiplicity;
-import com.onpositive.model.Builtins;
 import com.onpositive.model.IProperty;
+import com.onpositive.model.IType;
 
-public class PropertyFilter implements IClause {
-
-	public enum PropertyFilterMode {
-		HAS_GREATER, HAS_LESS, HAS_ANY, HAS_ALL, HAS_NOT_ANY, HAS_NOT_ALL, COUNT_GREATER, COUNT_LESS, COUNT_EQUAL,
-	}
+public class PropertyFilter implements IClause,IHasDomain {
 
 	protected final IProperty prop;
-	protected final ISelector predicate;
-	protected final PropertyFilterMode mode;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((predicate == null) ? 0 : predicate.hashCode());
+		result = prime * result + ((prop == null) ? 0 : prop.hashCode());
+		return result;
+	}
 
-	private PropertyFilter(IProperty prop, ISelector predicate, PropertyFilterMode mode) {
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PropertyFilter other = (PropertyFilter) obj;
+		if (predicate == null) {
+			if (other.predicate != null)
+				return false;
+		} else if (!predicate.equals(other.predicate))
+			return false;
+		if (prop == null) {
+			if (other.prop != null)
+				return false;
+		} else if (!prop.equals(other.prop))
+			return false;
+		return true;
+	}
+
+	protected final IComparison predicate;
+	
+	private PropertyFilter(IProperty prop, IComparison predicate) {
 		super();
 		this.prop = prop;
 		this.predicate = predicate;
-		this.mode = mode;
-	}
+	} 
 	
 	public IProperty property(){
 		return prop;		
 	}
 	
-	public ISelector predicate(){
-		return predicate;
-	}
-	
-	public PropertyFilterMode mode(){
-		return mode;
+	@Override
+	public String toString() {
+		return "FILTER("+prop.toString()+","+predicate.toString()+")";
 	}
 
 	@Clause("FILTER")
-	public static PropertyFilter propertyFilter(IProperty prop, ISelector predicate, PropertyFilterMode mode) {
-		switch (mode) {
-		case COUNT_EQUAL:
-		case COUNT_GREATER:
-		case COUNT_LESS:
-			if (predicate.domain() != Builtins.INTEGER)
-				return null;
-			if (predicate.multiplicity() != Multiplicity.SINGLE) {
-				return null;
-			}
-			break;
-		case HAS_ALL:
-		case HAS_ANY:
-		case HAS_GREATER:
-		case HAS_LESS:
-		case HAS_NOT_ALL:
-		case HAS_NOT_ANY:
-			if (!predicate.domain().isSubtypeOf(prop.range())) {
-				return null;
-			}
-		}
-		return new PropertyFilter(prop, predicate, mode);
+	public static PropertyFilter propertyFilter(IProperty prop, IComparison predicate) {
+		if (predicate.domain().isSubtypeOf(prop.domain())){
+			prop=new InverseProperty(prop);
+		}		
+		return new PropertyFilter(prop, predicate);
 	}
+	
 
 	@Override
 	public ISelector produce(ISelector s) {
 		if (!s.domain().isSubtypeOf(prop.domain())) {
 			return null;
 		}
-		return new ClauseSelector(s, s.domain(), null, this);
+		return ClauseSelector.produce(s, s.domain(), null, this);
+	}
+
+	@Override
+	public IType domain() {
+		return prop.domain();
+	}
+
+	public IHasDomain negate() {
+		return new PropertyFilter(this.prop, predicate.negate());
+	}
+
+	@Override
+	public List<? extends IParsedEntity> children() {
+		return Collections.singletonList(predicate);
+	}
+
+	@Override
+	public List<IProperty> usedProperties() {
+		return Collections.singletonList(prop);
 	}	
 }

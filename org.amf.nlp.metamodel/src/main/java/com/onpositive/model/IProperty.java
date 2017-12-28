@@ -7,4 +7,11 @@ public interface IProperty extends INamed{
 	IType range();
 	
 	String id();
+	
+	int complexity();
+	
+	default boolean hasCompatibleRange(IType t){
+		return this.range().isSubtypeOf(t);
+	}
+	
 }

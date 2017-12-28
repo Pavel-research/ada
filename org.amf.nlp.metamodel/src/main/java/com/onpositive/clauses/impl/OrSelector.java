@@ -1,13 +1,19 @@
 package com.onpositive.clauses.impl;
 
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
+
+import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.ICompositeSelector;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
+import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
+import com.onpositive.model.ITypedEntity;
 
 public class OrSelector implements ICompositeSelector {
 
@@ -47,8 +53,13 @@ public class OrSelector implements ICompositeSelector {
 		this.selector = sel;
 	}
 
-	@Clause("or")
+	@Clause("OR")
 	public static ISelector or(List<ISelector> prop) {
+		if(prop.stream().allMatch(x->x instanceof SingleSelector)){
+			LinkedHashSet<Object>os=new LinkedHashSet<>();
+			prop.stream().map(x->((SingleSelector)x).getValue()).forEach(v->os.addAll(v));
+			return new SingleSelector(os, ((ITypedEntity)os.iterator().next()).type());
+		}
 		LinkedHashSet<ISelector> s = new LinkedHashSet<>();
 		for (ISelector f : prop) {
 			if (f instanceof OrSelector) {
@@ -82,5 +93,15 @@ public class OrSelector implements ICompositeSelector {
 	@Override
 	public Set<ISelector> members() {
 		return selector;
+	}
+
+	@Override
+	public List<? extends IParsedEntity> children() {
+		return new ArrayList<>(selector);
+	}
+
+	@Override
+	public List<IProperty> usedProperties() {
+		return Collections.emptyList();
 	}
 }

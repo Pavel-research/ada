@@ -1,0 +1,118 @@
+#%RAML Vocabulary 0.1
+base: http://github.org/model#
+classTerms:
+  NamedEntity:
+    properties:
+      - name
+      - created_at
+      - updated_at
+  Milestone:
+    extends: NamedEntity
+    properties:
+      - state
+  PullRequest:
+    extends: NamedEntity
+  Repository:
+    extends: NamedEntity
+    properties:
+      - owner
+      - forks
+      - watchers
+      - stargazers_count
+      - issues
+      
+  Organization:
+    extends: NamedEntity
+    properties:
+      - repositories
+  Label:
+    extends: NamedEntity
+  User:
+    extends: NamedEntity
+    properties:    
+      - company
+  Issue:
+    extends: NamedEntity
+    properties:
+      - body
+      - milestone
+      - labels
+      - closed_at
+      - closed_by
+      - user
+      - assignee
+      - state
+      - assignee
+      - repository
+      - comments
+      - commentsNumber
+
+  Comment:
+     properties:
+       - created_at
+       - updated_at
+       - body
+       - user
+propertyTerms:
+  created:
+    range: Issue
+  comments:
+    range: Comment
+  repositories:
+    range: Repository  
+  user:
+    range: User
+    extends: creator
+    # sameAs: [ created_by, opened_by, filed_by ]
+  assignee:
+    range: User
+    # sameAs: [ assigned_to ]
+  company:
+    range: string
+    # sameAs: [from_company,companies,from]
+  labels:
+    range: Label
+  created_by:
+    range: User  
+  closed_by:
+    range: User
+  name:
+    range: string
+  stargazers_count:
+    range: integer
+    # sameAs: [ stars , count_of_stars]
+  milestone:
+    range: Milestone
+  created_at:
+    # sameAs: [ creation_time,time_of_creation]
+    range: datetime
+  updated_at:
+    range: datetime
+  state:
+    range: string
+  issues: 
+    range: Issue  
+  title:
+    extends: name
+  avatar_url:
+    range: string
+  login:
+    range: string
+  forks:
+    range: integer
+  watchers:
+    range: integer
+  creator:
+    range: User
+  closed_at:
+    range: datetime
+  number:
+    range: integer
+  commentsNumber:
+    range: integer
+  body:
+    range: string
+  owner:
+    range: User
+  repository:
+    range: Repository

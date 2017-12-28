@@ -1,0 +1,13 @@
+classes: [ NAMED_DATE]
+functions: [LAST,PREV,NEXT]
+layers: [initial]
+rules:
+ last:
+  when: "last" n=NAMED_DATE 
+  then: LAST(n)
+  example: "last January" 
+ prev:
+  when: "previous" n=NAMED_DATE 
+  then: LAST(n)
+  example: "last January"
+  

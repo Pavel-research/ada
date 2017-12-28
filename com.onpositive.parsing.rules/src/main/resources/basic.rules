@@ -1,0 +1,8 @@
+classes: [ selector , property ]
+functions: [FILTER]
+layers: [initial]
+rules:
+ propertyEqual:
+  when: p=property s= selector
+  then: FILTER(p,s,"==")
+  example: "created by Gleb Borisov" 

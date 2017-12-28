@@ -5,6 +5,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.ada.logic.BasicLogic;
+import com.onpositive.clauses.IClause;
+import com.onpositive.clauses.ISelector;
+import com.onpositive.model.IClass;
+import com.onpositive.model.IProperty;
+import com.onpositive.model.IType;
 
 public class Clauses {
 
@@ -13,12 +22,18 @@ public class Clauses {
 	HashMap<String,Object>map=new HashMap<String,Object>();
 	
 	Clauses(){
-		proceed(Aggregators.class);
-		proceed(MapByProperty.class);
-		proceed(PropertyFilter.class);
-		proceed(OrSelector.class);
-		proceed(AndSelector.class);
+		//proceed(Aggregators.class);
+		//proceed(MapByProperty.class);
+		//proceed(PropertyFilter.class);
+		//proceed(OrSelector.class);
+		//proceed(AndSelector.class);
+		//proceed(Clauses.class);
+		proceed(BasicLogic.class);
 	}
+	
+	
+	
+	
 	
 	public boolean canCreate(String name,Object[]args){
 		Object object = map.get(name);

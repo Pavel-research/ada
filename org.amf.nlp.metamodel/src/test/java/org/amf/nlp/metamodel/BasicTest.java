@@ -14,10 +14,6 @@ import org.raml.vocabularies.Vocabulary;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.impl.AllInstancesOf;
 import com.onpositive.clauses.impl.MapByProperty;
-import com.onpositive.clauses.impl.PropertyFilter;
-import com.onpositive.clauses.impl.PropertyFilter.PropertyFilterMode;
-import com.onpositive.clauses.impl.SingleSelector;
-import com.onpositive.model.Builtins;
 import com.onpositive.model.IClass;
 import com.onpositive.model.IProperty;
 
@@ -51,8 +47,8 @@ public class BasicTest extends TestCase {
 			assertEquals(size,1062);
 			Optional<IProperty> issues = tp.property("issues");
 			long l0=System.currentTimeMillis();
-			Collection<Object> execute2 = typedStore.execute(PropertyFilter.propertyFilter(issues.get(),new SingleSelector(100, Builtins.INTEGER),  PropertyFilterMode.COUNT_GREATER).produce(repos));
-			assertEquals(execute2.size(), 11);
+//			Collection<Object> execute2 = typedStore.execute(PropertyFilter.propertyFilter(issues.get(),new SingleSelector(100, Builtins.INTEGER),  PropertyFilterMode.COUNT_GREATER).produce(repos));
+//			assertEquals(execute2.size(), 11);
 			long l1=System.currentTimeMillis();
 			System.out.println(l1-l0);
 		} catch (IOException e) {

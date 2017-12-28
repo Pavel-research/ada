@@ -1,0 +1,39 @@
+5 issues  -> D[5,issues]
+5 issues assigned to Denis -> D[5,issues assigned to Denis]
+assigned [to Denis]
+users who has more open issues then Denis
+issues with more comments then #4554
+repositories with [more then 5 open issues]
+issues with more then 5 comments
+
+repositories with [more then 5 users] with assigned issues
+
+
+
+//conditions
+
+to Denis
+then Denis
+more then Denis
+smaller [number of tickets] (then Denis)
+
+
+more then 5 issues -> measurable Thing
+then Denis -> not measurable
+
+
+
+created to Denis
+
+
+Particles:
+   - measurable (particles who know the domain)  5 issues, to Denis
+   - not measurable 
+   
+   
+more
+less
+greater
+
+
+repository with largest number of tickets   

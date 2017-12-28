@@ -1,0 +1,8 @@
+dimension(amount,domain)
+num_condition(operator,dimension)  
+
+repositories with more then 5 issues : C:Repository=>HAVING(num_condition("count>",D[5,C:Issue])
+users who created more issues then Denis
+users who created more issues then raml-for-jaxrs has
+
+aircrafts with (maximum speed) (more then 500 mph)

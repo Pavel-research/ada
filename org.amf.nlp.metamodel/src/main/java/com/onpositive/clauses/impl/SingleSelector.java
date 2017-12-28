@@ -1,12 +1,28 @@
 package com.onpositive.clauses.impl;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
+import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
 public class SingleSelector implements ISelector {
 
 	private Object value;
+
+	String label;
+	
+	public String getLabel() {
+		return label;
+	}
+
+	public void setLabel(String label) {
+		this.label = label;
+	}
 
 	@Override
 	public int hashCode() {
@@ -41,6 +57,9 @@ public class SingleSelector implements ISelector {
 
 	@Override
 	public String toString() {
+		if (label!=null){
+			return label;
+		}
 		return value.toString();
 	}
 
@@ -51,8 +70,15 @@ public class SingleSelector implements ISelector {
 		this.value = value;
 		this.type = tp;
 	}
-	public Object getValue(){
-		return value;
+	@SuppressWarnings("unchecked")
+	public Collection<Object> getValue(){
+		if (value instanceof Collection<?>){
+			return (Collection<Object>) value;
+		}
+		else{
+			return Collections.singleton(value);
+		}
+		
 	}
 
 	@Override
@@ -63,6 +89,16 @@ public class SingleSelector implements ISelector {
 	@Override
 	public Multiplicity multiplicity() {
 		return Multiplicity.SINGLE;
+	}
+
+	@Override
+	public List<? extends IParsedEntity> children() {
+		return Collections.emptyList();
+	}
+
+	@Override
+	public List<IProperty> usedProperties() {
+		return Collections.emptyList();
 	}
 
 }

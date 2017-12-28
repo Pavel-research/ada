@@ -3,6 +3,7 @@ package com.onpositive.nlp.parser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class GroupPredicate implements SyntacticPredicate{
 
@@ -54,6 +55,11 @@ public class GroupPredicate implements SyntacticPredicate{
 			m.put(s, v);
 		}
 		return m;
+	}
+
+	@Override
+	public void gatherLiterals(Consumer<String> c) {
+		pred.gatherLiterals(c);
 	}
 
 }

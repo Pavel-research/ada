@@ -1,0 +1,122 @@
+// this rules performs basic operations like collapsing alternatives
+classes: [ named_date,dim_scalar,selector , clause, entity, className , number,comparative,measure,hasDomain,preposition,property,comparison]
+functions: [CONTAINED_SC,LAST_DATE,PREV_DATE,COMPARISON_NUMB,TAKE_PROPERTY,NUMP,NUMP2,PROPERTY_COMPARATIVE,OR,COLLAPSE_ENTITY,MEASURE,HAVING,CONTAINED,OWNED_BY,COMPARISON,FILTER,COMBINE,NOT,COMPARISON2,COMPARISON3,OR_COMPARISON,COMBINE_COMPARISON]
+layers: [initial,normal]
+rules:
+ lastDate:
+  when: "last" n=named_date 
+  then: LAST_DATE(n)
+  example: "last January" 
+  layer: initial
+ prevDate:
+  when: "previous" n=named_date 
+  then: PREV_DATE(n)
+  example: "last January"
+  layer: initial
+ definition: 
+   when: e=entity c=className
+   then: COLLAPSE_ENTITY(e,c)
+   example: "bug label"
+   layer: initial
+ rdefinition: 
+   when:  c=className e=entity
+   then: COLLAPSE_ENTITY(e,c)
+   example: "label bug"
+   layer: initial   
+ orSelector:
+  when: s=selector ("or" s+=selector)+
+  then: OR(s)
+  example: "Gleb or Denis"
+  layer: initial
+ propConversion:
+  when: "number"|"amount"|"count" ("of")? p=property
+  then: NUMP(p)
+  example: "number of issues" 
+ propConversion2:
+  when: "number"|"amount"|"count" ("of")? s=selector
+  then: NUMP2(s)
+  example: "number of issues"    
+ dimension:
+  when: n=number s=selector
+  then: MEASURE(n,s)
+  example: "5 issues"
+  layer: initial 
+ comparison:
+  when: v=comparative ("then")? m=measure
+  then: COMPARISON(v,m)  
+  example: "more then 5 issues"
+ comparison_nmb:
+  when: v=comparative ("then")? n=number p=property
+  then: COMPARISON_NUMB(v,n,p)  
+  example: "more then 5 issues"  
+ relative_comparative:
+  when: v=comparative c=selector "then" c1=hasDomain
+  then: COMPARISON2(v,c,c1)
+  example: "more issues then assigned to Denis"
+ relative_comparative2:
+  when: v=comparative p=property "then" c1=selector
+  then: COMPARISON3(v,p,c1)
+  example: "more watchers then raml-for-jaxrs"    
+ having:
+  when: s=selector "with"|"who_have"|"who_has"|"having" d=hasDomain
+  then: HAVING(s,d)
+  example: "repositories with more then 5 issues"
+ not_having:
+  when: s=selector "without" d=hasDomain
+  then: HAVING(s,NOT(d))
+  example: "repositories without issues"  
+ contained:
+  when: s0=selector "in" s1=selector
+  then: CONTAINED(s0,s1) 
+  example: "Repositories in mulesoft-labs"
+ not_having:
+  when: s=selector "without" d=hasDomain
+  then: HAVING(s,NOT(d))
+  example: "repositories without issues"  
+ contained_sc:
+  when: s0=selector "in" s1=dim_scalar
+  then: CONTAINED_SC(s0,s1) 
+  example: "Repositories in mulesoft-labs"
+ not_contained: 
+  when: s0=selector ("that_are")? "not" "in" s1=selector
+  then: CONTAINED(s0,NOT(s1)) 
+  example: "Repositories not in mulesoft-labs"
+ comp_property:
+  when: c=comparative p=property
+  then: PROPERTY_COMPARATIVE(c,p)
+  example:"repositories with most forks" 
+ not:
+  when: ("was" | "were" | "are" )? "not" c=hasDomain
+  then: NOT(c)
+  example: "not assigned to Denis"
+  layer: normal  
+ combineComparison:
+  when:  s=comparison ("and" ("that") ? s+=comparison)+
+  then: COMBINE_COMPARISON(s)
+  example: "issues [created by Gleb Borisov]" 
+  layer: normal  
+ orComparison:
+  when:  s=comparison ("or" ("that") ? s+=comparison)+
+  then: OR_COMPARISON(s)
+  example: "issues [created by Gleb Borisov]" 
+  layer: normal        
+ propertyMap:
+  when: p=property "of" s=selector
+  then: TAKE_PROPERTY(p,s)
+  example: "labels of issues in raml-for-jaxrs" 
+ propertyMap2:
+  when: s=selector p=property
+  then: TAKE_PROPERTY(p,s)
+  example: "Denis created" 
+ combine:
+  when:  s=selector ("and" | "that_were" | "that_was" | "who" |"who" | "which" | "that" | "where" | "with"|"who_have"|",")? ("have"|"has"|"are") ? c=clause
+  then: COMBINE(s,c)
+  example: "issues [created by Gleb Borisov]" 
+  layer: normal   
+ propertyEqual:
+  when: p=property (prep=preposition)? s=hasDomain
+  then: FILTER(p,s)
+  example: "created by Gleb Borisov,  " 
+  layer: normal  
+  //layer: normal
+  

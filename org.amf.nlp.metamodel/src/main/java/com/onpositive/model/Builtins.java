@@ -1,6 +1,47 @@
 package com.onpositive.model;
 
+import java.util.List;
+
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
+
 public class Builtins {
+
+	private static final class ALL implements IType,IClass {
+		@Override
+		public String name() {
+			return "them";
+		}
+
+		@Override
+		public boolean isOrdered() {
+			return false;
+		}
+
+		@Override
+		public boolean isSummable() {
+			return false;
+		}
+
+		@Override
+		public boolean isSubtypeOf(IType domain) {
+			if (domain instanceof IClass){
+				return true;
+			}
+			return false;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public List<IProperty> properties() {
+			return Collections.emptyList();
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public List<IProperty> allProperties() {
+			return Collections.emptyList();
+		}
+	}
 
 	public static final BuiltinType NUMBER=new BuiltinType("number",true);
 
@@ -21,6 +62,8 @@ public class Builtins {
 
 	public static final BuiltinType DURATION=new BuiltinType("duration",true);
 	
+	
+	public static IType ALLMATCH=new ALL();
 	
 	static{
 		NUMBER.setSummable(true);

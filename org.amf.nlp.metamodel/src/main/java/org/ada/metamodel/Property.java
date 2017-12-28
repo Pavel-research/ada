@@ -1,5 +1,8 @@
 package org.ada.metamodel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.onpositive.model.IClass;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
@@ -44,7 +47,25 @@ public class Property extends HasMeta<Property> implements IProperty{
 
 	@Override
 	public String toString() {
-		return "P:"+name;
+		return "P:"+domain.name()+"."+name;
 	}
 
+	@Override
+	public int complexity() {
+		return 1;
+	}
+
+	private ArrayList<IProperty>related=new ArrayList<>();
+	
+	public void recordRelated(IProperty iProperty) {
+		related.add(iProperty);
+		if (iProperty instanceof Property){
+			Property pr=(Property) iProperty;
+			pr.related.add(this);
+		}
+	}
+	
+	public List<IProperty> getRelated(){
+		return related;
+	}
 }
