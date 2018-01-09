@@ -97,8 +97,14 @@ public class EntityRecognizer implements IEntityRecognizer {
 	public ArrayList<Object> tryMatch(List<? extends Object> tokens) {
 		StringBuilder bld = new StringBuilder();
 		if (tokens.size()>1&&pref.contains(tokens.get(0))){
+			
 			return null;
 		}
+		boolean startsWithNumb=false;
+		if (tokens.size()>0&&(tokens.get(0) instanceof Number)){
+			startsWithNumb=true;
+		}
+		
 		for (Object o : tokens) {
 			bld.append(o.toString());
 		}
@@ -109,7 +115,7 @@ public class EntityRecognizer implements IEntityRecognizer {
 		// System.out.println(lowerCase);
 		
 		ArrayList<Object> arrayList = entities.get(lowerCase);
-		if (arrayList == null && ((lowerCase.length() > 3&&tokens.size()==1)||(lowerCase.length() > 6&&tokens.size()>1))&& !AllMatchParser.isDEBUG()) {
+		if (!startsWithNumb&&arrayList == null && ((lowerCase.length() > 3&&tokens.size()==1)||(lowerCase.length() > 6&&tokens.size()>1))&& !AllMatchParser.isDEBUG()) {
 			List<Word> correct = sp.getSuggestions(lowerCase, 100);
 			if (correct != null && !correct.isEmpty()) {
 				String corr = correct.get(0).getWord().toLowerCase();
