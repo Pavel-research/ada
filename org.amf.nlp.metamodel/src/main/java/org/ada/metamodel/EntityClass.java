@@ -1,6 +1,8 @@
 package org.ada.metamodel;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import com.onpositive.model.IClass;
@@ -11,6 +13,9 @@ public class EntityClass extends HasMeta<EntityClass> implements IClass{
 	
 	protected ArrayList<IProperty>properties=new ArrayList<IProperty>();
 	protected ArrayList<IProperty>returning=new ArrayList<>();
+	
+	protected LinkedHashSet<EntityClass>contained=new LinkedHashSet<>();
+	protected LinkedHashSet<EntityClass>containedIn=new LinkedHashSet<>();
 	
 	public EntityClass(String id,String name) {
 		super(id,name);
@@ -74,6 +79,21 @@ public class EntityClass extends HasMeta<EntityClass> implements IClass{
 
 	public void addReturning(Property property) {
 		this.returning.add(property);
+	}
+
+	public void recordContained(EntityClass clazz) {
+		this.contained.add(clazz);
+		clazz.containedIn.add(this);
+	}
+
+	@Override
+	public boolean isPartOf(IClass b) {
+		return containedIn.contains(b);
+	}
+
+	@Override
+	public Collection<? extends IClass> contained() {
+		return this.contained; 
 	}
 
 }

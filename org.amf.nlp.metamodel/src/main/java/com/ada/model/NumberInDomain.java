@@ -3,11 +3,11 @@ package com.ada.model;
 import java.util.Collections;
 import java.util.List;
 
-import com.ada.model.conditions.IHasDomain;
+import com.onpositive.clauses.IScalarValue;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
-public class NumberInDomain implements IHasDomain{
+public class NumberInDomain implements IScalarValue{
 
 	IType t;
 	public NumberInDomain(IType t, Number nmb) {
@@ -18,6 +18,9 @@ public class NumberInDomain implements IHasDomain{
 
 	Number nmb;
 	
+	public Number getNmb() {
+		return nmb;
+	}
 	@Override
 	public String toString() {
 		return nmb.toString();

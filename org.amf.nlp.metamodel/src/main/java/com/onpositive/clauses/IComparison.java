@@ -11,4 +11,6 @@ public interface IComparison extends IHasDomain{
 
 	IComparison solve(IProperty prop);
 
+	boolean match(Object property, IContext ct);
+
 }

@@ -5,14 +5,15 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.onpositive.clauses.IComparison;
+import com.onpositive.clauses.IContext;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
-public class AndComparison implements IComparison{
+public class AndComparison implements IComparison {
 
-	protected List<Comparison>cm;
+	protected List<Comparison> cm;
 	protected IType domain;
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -54,15 +55,15 @@ public class AndComparison implements IComparison{
 	public IType domain() {
 		return domain;
 	}
-	
+
 	@Override
 	public String toString() {
-		return "and("+cm.toString()+")";
+		return "and(" + cm.toString() + ")";
 	}
 
 	@Override
 	public IComparison negate() {
-		return new OrComparison(cm.stream().map(x->x.negate()).collect(Collectors.toList()), domain);
+		return new OrComparison(cm.stream().map(x -> x.negate()).collect(Collectors.toList()), domain);
 	}
 
 	@Override
@@ -83,6 +84,16 @@ public class AndComparison implements IComparison{
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public boolean match(Object property, IContext ct) {
+		for (Comparison c : cm) {
+			if (!c.match(property, ct)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

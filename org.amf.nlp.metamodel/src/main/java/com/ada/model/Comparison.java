@@ -1,12 +1,21 @@
 package com.ada.model;
 
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.ada.metamodel.Property;
 
 import com.ada.model.conditions.IHasDomain;
 import com.onpositive.clauses.IComparison;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
+import com.onpositive.clauses.IValue;
+import com.onpositive.clauses.impl.AllInstancesOf;
+import com.onpositive.clauses.impl.ClauseSelector;
 import com.onpositive.clauses.impl.MapByProperty;
+import com.onpositive.clauses.impl.SingleSelector;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
@@ -106,5 +115,53 @@ public class Comparison implements IComparison{
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public boolean match(Object property, IContext ct) {		
+		IHasDomain comparisonTarget2 = this.comparisonTarget;
+		
+		if (comparisonTarget2 instanceof IValue){
+			Object val=null;
+			if (comparisonTarget2 instanceof ISelector){
+				val=((ISelector) comparisonTarget2).values(ct).collect(Collectors.toSet());
+			}
+			else{
+				if (comparisonTarget2 instanceof NumberInDomain){
+					val=((NumberInDomain) comparisonTarget2).getNmb();
+				}
+				else if (comparisonTarget2 instanceof PropertyValue){
+					val=((PropertyValue) comparisonTarget2).getValue();
+				}
+				else if (comparisonTarget2 instanceof Measure){
+					Measure ssm=(Measure) comparisonTarget2;
+					if (property!=null){
+						ISelector selector = ssm.getSelector();
+						val=ssm.amount;
+						if (selector instanceof ClauseSelector){
+							ClauseSelector mm=(ClauseSelector) selector;
+							ClauseSelector cloneWithNewRoot = mm.cloneWithNewRoot(new SingleSelector(property, mm.domain()));
+							property=cloneWithNewRoot.values(ct).collect(Collectors.toSet());
+						}
+						else if (selector instanceof AllInstancesOf){
+							
+						}
+						else{
+							throw new IllegalStateException("unexpected selector");
+						}
+						
+					}
+				}
+			}
+			if (val==null){
+				throw new IllegalStateException("Not implemented yet");
+			}
+			return comparative.operation.op(property,val);
+		}
+		throw new IllegalStateException();
+	}
+
+	public IHasDomain getTarget() {
+		return comparisonTarget;
 	}
 }

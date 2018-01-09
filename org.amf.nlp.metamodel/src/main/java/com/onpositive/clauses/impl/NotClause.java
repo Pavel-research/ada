@@ -2,9 +2,11 @@ package com.onpositive.clauses.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.IClause;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.model.IProperty;
 
@@ -65,6 +67,9 @@ public class NotClause implements IClause{
 		return Collections.emptyList();
 	}
 
-	
+	@Override
+	public Stream<Object> perform(Stream<Object> selector, IContext ct) {
+		throw new IllegalStateException();
+	}
 
 }

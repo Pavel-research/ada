@@ -1,14 +1,18 @@
 package com.onpositive.clauses.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.ICompositeSelector;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.IProperty;
@@ -55,10 +59,10 @@ public class OrSelector implements ICompositeSelector {
 
 	@Clause("OR")
 	public static ISelector or(List<ISelector> prop) {
-		if(prop.stream().allMatch(x->x instanceof SingleSelector)){
-			LinkedHashSet<Object>os=new LinkedHashSet<>();
-			prop.stream().map(x->((SingleSelector)x).getValue()).forEach(v->os.addAll(v));
-			return new SingleSelector(os, ((ITypedEntity)os.iterator().next()).type());
+		if (prop.stream().allMatch(x -> x instanceof SingleSelector)) {
+			LinkedHashSet<Object> os = new LinkedHashSet<>();
+			prop.stream().map(x -> ((SingleSelector) x).getValue()).forEach(v -> os.addAll(v));
+			return new SingleSelector(os, ((ITypedEntity) os.iterator().next()).type());
 		}
 		LinkedHashSet<ISelector> s = new LinkedHashSet<>();
 		for (ISelector f : prop) {
@@ -103,5 +107,20 @@ public class OrSelector implements ICompositeSelector {
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Stream<Object> values(IContext ct) {
+		List<Collection<Object>> map = selector.stream().map(x -> x.values(ct).collect(Collectors.toList()))
+				.collect(Collectors.toList());
+		LinkedHashSet<Object> object = null;
+		for (Collection<Object> m : map) {
+			if (object == null) {
+				object = new LinkedHashSet<>();
+
+			}
+			object.addAll(m);
+		}
+		return object.stream();
 	}
 }

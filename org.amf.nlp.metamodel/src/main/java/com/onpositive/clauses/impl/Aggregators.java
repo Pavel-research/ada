@@ -1,10 +1,14 @@
 package com.onpositive.clauses.impl;
 
 import java.util.Collections;
+import java.util.DoubleSummaryStatistics;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.IClause;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.Builtins;
@@ -74,5 +78,41 @@ public class Aggregators implements IClause{
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();
 	}
+	
+	static double toDouble(Object o){
+		if (o instanceof Number){
+			return ((Number) o).doubleValue();
+		}
+		return 0;
+		
+	}
+
+
+	@Override
+	public Stream<Object> perform(Stream<Object> selector, IContext ct) {
+		double result=0;
+		DoubleSummaryStatistics collect = selector.collect(Collectors.summarizingDouble(Aggregators::toDouble));
+		switch (mode) {
+		case COUNT:
+				result= collect.getCount();
+				break;
+		case AVG:
+				result= collect.getAverage();	
+				break;
+		case MAX:
+				result= collect.getMax();	
+				break;
+		case MIN:
+				result= collect.getMin();
+				break;
+		case SUM: 
+				result= collect.getSum();
+				break;
+		default:
+			break;
+		}
+		return Stream.of(result);
+	}
+
 
 }

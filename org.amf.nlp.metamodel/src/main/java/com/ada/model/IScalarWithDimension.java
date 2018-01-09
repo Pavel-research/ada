@@ -1,7 +1,7 @@
 package com.ada.model;
 
-import com.ada.model.conditions.IHasDomain;
+import com.onpositive.clauses.IScalarValue;
 
-public interface IScalarWithDimension extends IHasDomain{
+public interface IScalarWithDimension extends IScalarValue{
 
 }

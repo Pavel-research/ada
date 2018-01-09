@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 
+import com.onpositive.clauses.impl.ContainingProperty;
 import com.onpositive.clauses.impl.InverseProperty;
 import com.onpositive.clauses.impl.JoinProperty;
 import com.onpositive.clauses.impl.PathProperty;
@@ -88,7 +89,7 @@ public class PropertyAdapter {
 		if (res == null) {
 			res = findPath(c1, c0, 0, new HashSet<>());
 			if (res != null) {
-				res = new InverseProperty(res);
+				res = InverseProperty.createInverseProperty(res);
 			}
 		}
 		cache.put(key, res);
@@ -147,5 +148,20 @@ public class PropertyAdapter {
 			findPath = new PathProperty(newPath);
 		}
 		return findPath;
+	}
+
+	public static IProperty findContainmentPath(IClass base, IClass parts) {
+		if (parts.isPartOf(base)){
+			return new ContainingProperty(parts, base);
+		}
+		for (IClass c:base.contained()){
+			if (parts.isPartOf(c)){
+				ArrayList<IProperty>ps=new ArrayList<>();
+				ps.add(new ContainingProperty(c,base));
+				ps.add(new ContainingProperty(parts,c));
+				return new PathProperty(ps);
+			}
+		}
+		return null;
 	}
 }

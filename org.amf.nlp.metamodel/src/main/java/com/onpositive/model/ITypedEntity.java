@@ -9,4 +9,6 @@ public interface ITypedEntity extends IHasKind{
 	IClass type();
 
 	String name();
+	
+	Object property(String path);
 }

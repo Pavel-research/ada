@@ -1,12 +1,16 @@
 package com.onpositive.clauses.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.ada.model.Context;
 import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.IClause;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.IProperty;
@@ -26,6 +30,20 @@ public final class ClauseSelector implements ISelector {
 		this.multiplicity = multiplicity;
 		this.clause = clause;
 	}
+	
+	public ClauseSelector cloneWithNewRoot(ISelector newRoot){
+		if (this.parent instanceof ClauseSelector){
+			return new ClauseSelector(((ClauseSelector) parent).cloneWithNewRoot(newRoot), type, multiplicity, clause);
+		}
+		else{
+			return new ClauseSelector(newRoot, type, multiplicity, clause);
+		}
+	}
+	
+	@Override
+	public IType originalDomain() {
+		return getRoot().parent().domain();
+	}
 
 	public static ClauseSelector produce(ISelector parent, IType type, Multiplicity m, IClause c) {
 		if (c instanceof PropertyFilter&&parent.multiplicity()==Multiplicity.SINGLE){
@@ -33,6 +51,7 @@ public final class ClauseSelector implements ISelector {
 		}
 		return new ClauseSelector(parent, type, m, c);
 	}
+	
 
 	@Override
 	public String toString() {
@@ -137,5 +156,20 @@ public final class ClauseSelector implements ISelector {
 			ct.setThem(getRoot());
 		}
 		ISelector.super.initFromContext(ct);
+	}
+
+	Collection<Object>vl=null;
+	@Override
+	public Stream<Object> values(IContext ct) {
+		if (vl!=null){
+			return vl.stream();
+		}
+		Stream<Object> perform = this.clause.perform(this.parent.values(ct),ct);
+		vl=perform.collect(Collectors.toSet());
+		return vl.stream();		
+	}
+
+	public IClause getClause() {
+		return clause;
 	}
 }

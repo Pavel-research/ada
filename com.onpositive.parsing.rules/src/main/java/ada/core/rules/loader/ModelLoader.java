@@ -32,6 +32,7 @@ import com.ada.model.GenericTime;
 import com.ada.model.IScalarWithDimension;
 import com.ada.model.Measure;
 import com.ada.model.Preposition;
+import com.ada.model.PropertyValue;
 import com.ada.model.conditions.IHasDomain;
 import com.google.inject.Injector;
 import com.onpositive.clauses.IClause;
@@ -65,6 +66,7 @@ public class ModelLoader {
 		tc.put("comparison", Comparison.class);
 		tc.put("named_date", GenericTime.class);
 		tc.put("dim_scalar", IScalarWithDimension.class);
+		tc.put("property_value", PropertyValue.class);
 	}
 	
 	public static AllMatchParser<Object> load(URI path){

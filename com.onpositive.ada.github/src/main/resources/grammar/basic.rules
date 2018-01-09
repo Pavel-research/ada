@@ -1,6 +1,6 @@
 // this rules performs basic operations like collapsing alternatives
-classes: [ named_date,dim_scalar,selector , clause, entity, className , number,comparative,measure,hasDomain,preposition,property,comparison]
-functions: [CONTAINED_SC,LAST_DATE,PREV_DATE,COMPARISON_NUMB,TAKE_PROPERTY,NUMP,NUMP2,PROPERTY_COMPARATIVE,OR,COLLAPSE_ENTITY,MEASURE,HAVING,CONTAINED,OWNED_BY,COMPARISON,FILTER,COMBINE,NOT,COMPARISON2,COMPARISON3,OR_COMPARISON,COMBINE_COMPARISON]
+classes: [ property_value,named_date,dim_scalar,selector , clause, entity, className , number,comparative,measure,hasDomain,preposition,property,comparison]
+functions: [COMPARISON_NUMB2,OWNED2,COLLAPSE_PROPVAL,CONTAINED_SC,LAST_DATE,PREV_DATE,COMPARISON_NUMB,TAKE_PROPERTY,NUMP,NUMP2,PROPERTY_COMPARATIVE,OR,COLLAPSE_ENTITY,MEASURE,HAVING,CONTAINED,OWNED_BY,COMPARISON,FILTER,COMBINE,NOT,COMPARISON2,COMPARISON3,OR_COMPARISON,COMBINE_COMPARISON]
 layers: [initial,normal]
 rules:
  lastDate:
@@ -48,7 +48,11 @@ rules:
  comparison_nmb:
   when: v=comparative ("then")? n=number p=property
   then: COMPARISON_NUMB(v,n,p)  
-  example: "more then 5 issues"  
+  example: "more then 5 issues" 
+ comparison_nmb2:
+  when: "with" |"that_have"|"that_has" n=number p=property
+  then: COMPARISON_NUMB2(n,p)  
+  example: "repositories with 5 stars"    
  relative_comparative:
   when: v=comparative c=selector "then" c1=hasDomain
   then: COMPARISON2(v,c,c1)
@@ -58,7 +62,7 @@ rules:
   then: COMPARISON3(v,p,c1)
   example: "more watchers then raml-for-jaxrs"    
  having:
-  when: s=selector "with"|"who_have"|"who_has"|"having" d=hasDomain
+  when: s=selector "with"|"who_have"|"who_has"|"having"|"that_have"|"that_has" d=hasDomain
   then: HAVING(s,d)
   example: "repositories with more then 5 issues"
  not_having:
@@ -109,10 +113,18 @@ rules:
   then: TAKE_PROPERTY(p,s)
   example: "Denis created" 
  combine:
-  when:  s=selector ("and" | "that_were" | "that_was" | "who" |"who" | "which" | "that" | "where" | "with"|"who_have"|",")? ("have"|"has"|"are") ? c=clause
+  when:  s=selector ("and" | "that_were" | "that_was" | "who"  | "which" | "that" | "where" | "with"|"who_have"|",")? ("have"|"has"|"are") ? c=clause
   then: COMBINE(s,c)
   example: "issues [created by Gleb Borisov]" 
-  layer: normal   
+  layer: normal 
+ collapsePropVal:
+  when:  pv=property_value s=selector
+  then:  COLLAPSE_PROPVAL(pv,s)
+  example: "open issues"
+ selectorOwning:
+  when: e=entity s=selector
+  then: OWNED2(e,s)
+  example: "Gleb issues"
  propertyEqual:
   when: p=property (prep=preposition)? s=hasDomain
   then: FILTER(p,s)

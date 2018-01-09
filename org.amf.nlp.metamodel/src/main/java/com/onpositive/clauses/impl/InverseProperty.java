@@ -6,8 +6,18 @@ import com.onpositive.model.IType;
 
 public class InverseProperty implements IProperty{
 
+	public static IProperty createInverseProperty(IProperty original) {
+		if (original instanceof InverseProperty){
+			InverseProperty p=(InverseProperty) original;
+			return p.original;
+		}
+		return new InverseProperty(original);
+	}
 	protected final IProperty original;
 	
+	public IProperty getOriginal() {
+		return original;
+	}
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -31,7 +41,7 @@ public class InverseProperty implements IProperty{
 			return false;
 		return true;
 	}
-	public InverseProperty(IProperty original) {
+	private InverseProperty(IProperty original) {
 		super();
 		this.original = original;
 	}
@@ -66,6 +76,10 @@ public class InverseProperty implements IProperty{
 	@Override
 	public int complexity() {
 		return 2*original.complexity();
+	}
+	@Override
+	public boolean multiValue() {
+		return true;
 	}
 
 }

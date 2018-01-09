@@ -23,8 +23,7 @@ classTerms:
       
   Organization:
     extends: NamedEntity
-    properties:
-      - repositories
+    
   Label:
     extends: NamedEntity
   User:
@@ -44,7 +43,7 @@ classTerms:
       - state
       - assignee
       - repository
-      - comments
+     
       - commentsNumber
 
   Comment:

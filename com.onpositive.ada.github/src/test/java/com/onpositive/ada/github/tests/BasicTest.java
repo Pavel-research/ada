@@ -8,13 +8,70 @@ import com.onpositive.nlp.parser.AllMatchParser;
 import junit.framework.TestCase;
 
 public class BasicTest extends TestCase {
-
+	
+	public void test0123() {
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("open issues created by Vasilii that are not assigned");
+		assertEquals(parse.toString(), "[[C:Issue=>FILTER(P:Issue.user,(in,E:Gleb Borisov))]]");
+	}
+	
 	public void test0() {
 		CoreEngine engine = Github.getEngine();
 		ParsedQuery parse = engine.parse("Issues created by Gleb");
 		assertEquals(parse.toString(), "[[C:Issue=>FILTER(P:Issue.user,(in,E:Gleb Borisov))]]");
 	}
-
+	public void test011() {
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("issue with largest number of comments");
+		assertEquals(parse.toString(), "[[C:Issue=>PC(P:Issue.commentsNumber,>>)]]");
+	}
+	public void test012() {
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("open issue with largest number of comments in raml-js-parser");
+		assertEquals(parse.toString(), "[[C:Issue=>PC(P:Issue.commentsNumber,>>)=>IN((in,O:ramljsparser))=>FILTER(P:Issue.state,(in,PV:open))]]");
+	}
+	public void test013() {
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("repository with issue with largest number of comments");
+		assertEquals(parse.toString(), "[[C:Repository=>WITH((in,C:Issue=>PC(P:Issue.commentsNumber,>>)))]]");
+	}
+	public void test014() {
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("repository with largest number of comments");
+		assertEquals(parse.toString(), "[[C:Repository=>PC(PathProp:([Repository->Issue, P:Issue.commentsNumber]),>>)]]");
+	}
+	
+	public void test01() {
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("open issues created by Gleb");
+		assertEquals(parse.toString(), "[[C:Issue=>FILTER(P:Issue.user,(in,E:Gleb Borisov))=>FILTER(P:Issue.state,(in,PV:open))]]");
+	}
+	public void test02(){
+		CoreEngine engine = Github.getEngine();
+		AllMatchParser.setDEBUG(true);
+		ParsedQuery parse = engine.parse("Gleb issues");
+		AllMatchParser.setDEBUG(false);
+		assertEquals(parse.toString(), "[[E:Gleb Borisov=>map(!C:Issue.[P:Issue.closed_by, P:Issue.user, P:Issue.assignee])]]");		
+	}
+	
+	public void test03(){
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("open Gleb issues");
+		assertEquals(parse.toString(), "[[E:Gleb Borisov=>map(!C:Issue.[P:Issue.closed_by, P:Issue.user, P:Issue.assignee])=>FILTER(P:Issue.state,(in,PV:open))]]");		
+	}
+	
+	public void test05(){
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("Gleb open issues");
+		assertEquals(parse.toString(), "[[E:Gleb Borisov=>map(!C:Issue.[P:Issue.closed_by, P:Issue.user, P:Issue.assignee])=>FILTER(P:Issue.state,(in,PV:open))]]");		
+	}
+	
+	public void test04(){
+		CoreEngine engine = Github.getEngine();
+		ParsedQuery parse = engine.parse("Gleb issues assigned to Denis");
+		assertEquals(parse.toString(), "[[E:Gleb Borisov=>map(!C:Issue.[P:Issue.closed_by, P:Issue.user, P:Issue.assignee])=>FILTER(P:Issue.assignee,(in,O:Denis))]]");		
+	}
+	
 	public void test1() {
 		CoreEngine engine = Github.getEngine();
 		ParsedQuery parse = engine.parse("5 issues");
@@ -42,7 +99,7 @@ public class BasicTest extends TestCase {
 	public void test5() {
 		CoreEngine engine = Github.getEngine();
 		ParsedQuery parse = engine.parse("repositories with issues with more then 5 comments");
-		assertEquals(parse.toString(), "[[C:Repository=>WITH((in,C:Issue=>WITH((>,D[5,C:Comment]))))]]");
+		assertEquals(parse.toString(), "[[C:Repository=>WITH((in,C:Issue=>FILTER(P:Issue.commentsNumber,(>,5))))]]");
 	}
 
 	public void test6() {
@@ -71,21 +128,21 @@ public class BasicTest extends TestCase {
 		// users created more issues then denis
 		CoreEngine engine = Github.getEngine();
 		ParsedQuery parse = engine.parse("repositories with more watchers then raml-for-jaxrs");
-		assertEquals(parse.toString(), "[[C:Repository=>WITH((>,O:ramlforjaxrs=>map(P:Repository.watchers)))]]");
+		assertEquals(parse.toString(), "[[C:Repository=>FILTER(P:Repository.watchers,(>,O:ramlforjaxrs=>map(P:Repository.watchers)))]]");
 	}
 
 	public void test65() {
 		// users created more issues then denis
 		CoreEngine engine = Github.getEngine();
 		ParsedQuery parse = engine.parse("repositories with most forks");
-		assertEquals(parse.toString(), "[[C:Repository=>WITH((in,PC(COMP(most),P:Repository.forks)))]]");
+		assertEquals(parse.toString(), "[[C:Repository=>PC(P:Repository.forks,>>)]]");
 	}
 
 	public void test66() {
 		// users created more issues then denis
 		CoreEngine engine = Github.getEngine();
 		ParsedQuery parse = engine.parse("repositories with largest number of forks");
-		assertEquals(parse.toString(), "[[C:Repository=>WITH((in,PC(COMP(largest),P:Repository.forks)))]]");
+		assertEquals(parse.toString(), "[[C:Repository=>PC(P:Repository.forks,>>)]]");
 	}
 
 	public void test67() {
@@ -116,7 +173,7 @@ public class BasicTest extends TestCase {
 		CoreEngine engine = Github.getEngine();
 		ParsedQuery parse = engine.parse("labels of issues with more then 10 comments");
 		assertEquals(parse.toString(),
-				"[[C:Issue=>WITH((>,D[10,C:Comment]))=>map(P:Issue.labels)]]");
+				"[[C:Issue=>FILTER(P:Issue.commentsNumber,(>,10))=>map(P:Issue.labels)]]");
 	}
 	public void test6991() {
 		// users created more issues then denis

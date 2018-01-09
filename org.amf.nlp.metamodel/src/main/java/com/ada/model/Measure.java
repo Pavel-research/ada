@@ -4,14 +4,14 @@ import java.util.List;
 
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
-import com.ada.model.conditions.IHasDomain;
+import com.onpositive.clauses.IScalarValue;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
 //repositories with 5 issues
 //repositories with more then 5 issues
-public final class Measure  implements IHasDomain{
+public final class Measure  implements IScalarValue{
 
 	protected final Number amount;
 	
@@ -78,6 +78,7 @@ public final class Measure  implements IHasDomain{
 		return Collections.singletonList(selector);
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();

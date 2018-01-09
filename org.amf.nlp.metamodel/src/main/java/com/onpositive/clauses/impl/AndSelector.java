@@ -1,13 +1,17 @@
 package com.onpositive.clauses.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.ada.model.IParsedEntity;
 import com.onpositive.clauses.ICompositeSelector;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.IProperty;
@@ -89,5 +93,24 @@ public class AndSelector implements ICompositeSelector {
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public Stream<Object> values(IContext ct) {
+		List<Collection<Object>> map = selector.stream().map(x -> x.values(ct).collect(Collectors.toList()))
+				.collect(Collectors.toList());
+		LinkedHashSet<Object> object = null;
+		for (Collection<Object> m : map) {
+			if (object == null) {
+				object = new LinkedHashSet<>();
+				object.addAll(m);
+			} else {
+
+				object.retainAll(m);
+
+			}
+		}
+		return object.stream();
+
 	}
 }

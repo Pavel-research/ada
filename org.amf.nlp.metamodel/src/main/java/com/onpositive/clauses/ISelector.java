@@ -4,8 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Stream;
 
-import com.ada.model.conditions.IHasDomain;
 import com.onpositive.clauses.impl.AndSelector;
 import com.onpositive.clauses.impl.MapByProperty;
 import com.onpositive.clauses.impl.OrSelector;
@@ -13,7 +13,7 @@ import com.onpositive.model.IClass;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
-public interface ISelector extends IHasDomain{
+public interface ISelector extends IValue{
 	
 	IType domain(); 
 	
@@ -22,7 +22,9 @@ public interface ISelector extends IHasDomain{
 	default ISelector map(IProperty pr){
 		return MapByProperty.map(pr).produce(this);
 	}
-
+	default ISelector map(String pr){
+		return map(clazz().get().property(pr).get());		
+	}
 
 	default ISelector or(ISelector pr){
 		return new OrSelector(new LinkedHashSet<>(Arrays.asList(new ISelector[]{this,pr})));
@@ -38,4 +40,8 @@ public interface ISelector extends IHasDomain{
 		}
 		return Collections.emptyList();
 	}
+	
+	Stream<Object>values(IContext ct);
+
+	
 }

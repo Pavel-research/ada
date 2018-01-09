@@ -1,11 +1,28 @@
+classes:
+  Issue:
+    urlContainedIn: [ Repository ]
+  Repository:
+     urlContainedIn: [ Organization ]  
 properties:
   user: 
     sameAs:  [ created ]
+    multiValue: false
   commentsNumber:
     sameAs:  [ comments ]  
+    getAs: comments
+     
   stargazers_count:
     sameAs:  [ stars ]
+    multiValue: false
   created_by:
     related: [created_at ]
+    multiValue: false
   closed_by:
-    related: [ closed_at ]      
+    related: [ closed_at ]  
+    multiValue: false    
+  state:
+    multiValue: false
+    recognizeValues: true  
+       
+  repository:
+    getAs: repository_url  

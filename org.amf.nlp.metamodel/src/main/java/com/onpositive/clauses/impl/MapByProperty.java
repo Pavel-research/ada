@@ -1,12 +1,17 @@
 package com.onpositive.clauses.impl;
 
+import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.ada.model.IParsedEntity;
 import com.ada.model.conditions.IHasDomain;
 import com.onpositive.clauses.IClause;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
+import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
@@ -52,14 +57,21 @@ public class MapByProperty implements IClause,IHasDomain{
 	public ISelector produce(ISelector s) {
 		if (!s.domain().isSubtypeOf(property.domain())){
 			if (s.domain().isSubtypeOf(property.range())){
-				return new MapByProperty(new InverseProperty(property)).produce(s);
+				return new MapByProperty(InverseProperty.createInverseProperty(property)).produce(s);
 			}
 			return null;
 		}
 		
-		return ClauseSelector.produce(s, property.range(), s.multiplicity(), this);
+		return ClauseSelector.produce(s, property.range(), multiplicity(s.multiplicity(),property), this);
 	}
 	
+	private Multiplicity multiplicity(Multiplicity multiplicity, IProperty property2) {
+		if (property2.multiValue()){
+			return Multiplicity.MULTIPLE;
+		}
+		return multiplicity;
+	}
+
 	@Clause("MAP")
 	public static MapByProperty map(IProperty prop){
 		return new MapByProperty(prop);		
@@ -84,4 +96,22 @@ public class MapByProperty implements IClause,IHasDomain{
 	public List<IProperty> usedProperties() {
 		return Collections.singletonList(property);
 	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Stream<Object> perform(Stream<Object> selector, IContext ct) {
+		LinkedHashSet<Object>rs=new LinkedHashSet<>();
+		selector.forEach(v->{
+			Object property2 = ct.store().property(v,property);
+			if (property2 instanceof Collection){
+				rs.addAll((Collection)property2);
+			}
+			else if (property2!=null){
+				rs.add(property2);
+			}
+		});
+		return rs.stream();
+	}
+
+	
 }

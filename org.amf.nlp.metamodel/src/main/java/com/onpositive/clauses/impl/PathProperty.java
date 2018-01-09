@@ -43,6 +43,9 @@ public class PathProperty implements IProperty{
 	@Override
 	public int complexity() {
 		int sum=0;
+		if (path.stream().allMatch(x-> x instanceof ContainingProperty)){
+			return 1;
+		}
 		for (IProperty p:path){
 			sum+=p.complexity();
 		}
@@ -56,5 +59,10 @@ public class PathProperty implements IProperty{
 	@Override
 	public String toString() {
 		return "PathProp:("+path.toString()+")";
+	}
+	
+	@Override
+	public boolean multiValue() {
+		return path.stream().anyMatch(x->x.multiValue());
 	}
 }

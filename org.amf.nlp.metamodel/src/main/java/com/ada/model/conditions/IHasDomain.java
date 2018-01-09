@@ -14,6 +14,10 @@ public interface IHasDomain extends IParsedEntity{
 
 	IType domain();
 
+	default IType originalDomain(){
+		return domain();
+	}
+	
 	default Optional<IClass>clazz(){
 		if (domain() instanceof IClass){
 			return Optional.of((IClass)domain());

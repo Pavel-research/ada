@@ -7,20 +7,37 @@ import com.onpositive.model.IClass;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
-public class Property extends HasMeta<Property> implements IProperty{
+public class Property extends HasMeta<Property> implements IProperty {
 
 	private IClass domain;
 	private IType range;
+	private boolean multiValue = true;
+	private String storeId;
 
-	public Property(String id,String name,EntityClass domain,IType range) {
-		super(id,name);
-		this.domain=domain;
-		this.range=range;
-		if (range==null){
+	public String getStoreId() {
+		if (this.storeId != null) {
+			return storeId;
+		}
+		return this.name;	
+	}
+
+	public boolean isMultiValue() {
+		return multiValue;
+	}
+
+	public void setMultiValue(boolean multiValue) {
+		this.multiValue = multiValue;
+	}
+
+	public Property(String id, String name, EntityClass domain, IType range) {
+		super(id, name);
+		this.domain = domain;
+		this.range = range;
+		if (range == null) {
 			throw new IllegalStateException();
 		}
-		if (range instanceof EntityClass){
-			EntityClass ec=(EntityClass) range;
+		if (range instanceof EntityClass) {
+			EntityClass ec = (EntityClass) range;
 			ec.addReturning(this);
 		}
 	}
@@ -47,7 +64,7 @@ public class Property extends HasMeta<Property> implements IProperty{
 
 	@Override
 	public String toString() {
-		return "P:"+domain.name()+"."+name;
+		return "P:" + domain.name() + "." + name;
 	}
 
 	@Override
@@ -55,17 +72,26 @@ public class Property extends HasMeta<Property> implements IProperty{
 		return 1;
 	}
 
-	private ArrayList<IProperty>related=new ArrayList<>();
-	
+	private ArrayList<IProperty> related = new ArrayList<>();
+
 	public void recordRelated(IProperty iProperty) {
 		related.add(iProperty);
-		if (iProperty instanceof Property){
-			Property pr=(Property) iProperty;
+		if (iProperty instanceof Property) {
+			Property pr = (Property) iProperty;
 			pr.related.add(this);
 		}
 	}
-	
-	public List<IProperty> getRelated(){
+
+	public List<IProperty> getRelated() {
 		return related;
+	}
+
+	@Override
+	public boolean multiValue() {
+		return this.multiValue;
+	}
+
+	public void setStoreId(String getAs) {
+		this.storeId = getAs;
 	}
 }

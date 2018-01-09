@@ -1,6 +1,6 @@
 MORE=greater,more,larger,bigger,later
 LESS=less,smaller,less,earlier
-MAX=most,greatest,largest,biggest
-MIN=smallest
+MAX=most,greatest,largest,biggest,maximum,min
+MIN=smallest,minimum,max
 EQUAL=same,equal,exactly_same
 NEAREST=nearest

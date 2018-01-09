@@ -2,11 +2,13 @@ package com.onpositive.clauses.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.ada.model.IParsedEntity;
 import com.ada.model.conditions.IHasDomain;
 import com.onpositive.clauses.IClause;
 import com.onpositive.clauses.IComparison;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
@@ -65,7 +67,7 @@ public class PropertyFilter implements IClause,IHasDomain {
 	@Clause("FILTER")
 	public static PropertyFilter propertyFilter(IProperty prop, IComparison predicate) {
 		if (predicate.domain().isSubtypeOf(prop.domain())){
-			prop=new InverseProperty(prop);
+			prop=InverseProperty.createInverseProperty(prop);
 		}		
 		return new PropertyFilter(prop, predicate);
 	}
@@ -96,5 +98,10 @@ public class PropertyFilter implements IClause,IHasDomain {
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.singletonList(prop);
+	}
+
+	@Override
+	public Stream<Object> perform(Stream<Object> selector, IContext ct) {		
+		return selector.filter(x->predicate.match(ct.store().property(x, prop),ct));
 	}	
 }

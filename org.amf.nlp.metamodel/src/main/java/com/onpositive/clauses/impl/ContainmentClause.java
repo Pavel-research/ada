@@ -2,6 +2,7 @@ package com.onpositive.clauses.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.ada.model.Comparative;
 import com.ada.model.Comparative.Kind;
@@ -10,13 +11,15 @@ import com.ada.model.IParsedEntity;
 import com.ada.model.Measure;
 import com.ada.model.conditions.IHasDomain;
 import com.onpositive.clauses.IClause;
+import com.onpositive.clauses.IComparison;
+import com.onpositive.clauses.IContext;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.Multiplicity;
 import com.onpositive.model.IProperty;
 
 public class ContainmentClause implements IClause{
 
-	protected Comparison contained;
+	protected IComparison contained;
 	
 	protected boolean in;
 
@@ -63,11 +66,11 @@ public class ContainmentClause implements IClause{
 		super();
 		this.property=property;
 		this.in=in;
-		if (!(contained instanceof Comparison)){
+		if (!(contained instanceof IComparison)){
 			this.contained=new Comparison(contained, new Comparative(contained instanceof Measure?Kind.EQUAL:Kind.IN, "in"));
 		}
 		else{
-		this.contained = (Comparison) contained;
+		this.contained = (IComparison) contained;
 		}
 	}
 
@@ -98,5 +101,10 @@ public class ContainmentClause implements IClause{
 			return Collections.emptyList();
 		}
 		return Collections.singletonList(property);
+	}
+
+	@Override
+	public Stream<Object> perform(Stream<Object> selector, IContext ct) {
+		return PropertyFilter.propertyFilter(property, this.contained).perform(selector, ct);
 	}
 }

@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.onpositive.clauses.IComparison;
+import com.onpositive.clauses.IContext;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
@@ -11,8 +12,16 @@ public class PropertyComparison implements IComparison{
 
 	protected final Comparative cmp;
 
+	public Comparative getCmp() {
+		return cmp;
+	}
+
 	protected final IProperty prop;
 	
+	public IProperty getProp() {
+		return prop;
+	}
+
 	public PropertyComparison(Comparative cmp, IProperty prop) {
 		super();
 		this.cmp = cmp;
@@ -84,5 +93,11 @@ public class PropertyComparison implements IComparison{
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public boolean match(Object property, IContext ct) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 }

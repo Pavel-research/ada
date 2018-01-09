@@ -41,6 +41,17 @@ public class Builtins {
 		public List<IProperty> allProperties() {
 			return Collections.emptyList();
 		}
+
+		@Override
+		public boolean isPartOf(IClass b) {
+			return false;
+		}
+
+		@SuppressWarnings("unchecked")
+		@Override
+		public List<IClass> contained() {
+			return Collections.emptyList();
+		}
 	}
 
 	public static final BuiltinType NUMBER=new BuiltinType("number",true);

@@ -6,6 +6,15 @@ import java.util.Map;
 public class Meta {
 
 	protected Map<String,PropertyMeta> properties=new LinkedHashMap<>();
+	protected Map<String,ClassMeta> classes=new LinkedHashMap<>();
+
+	public Map<String, ClassMeta> getClasses() {
+		return classes;
+	}
+
+	public void setClasses(Map<String, ClassMeta> classes) {
+		this.classes = classes;
+	}
 
 	public Map<String, PropertyMeta> getProperties() {
 		return properties;

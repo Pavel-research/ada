@@ -1,7 +1,10 @@
 package com.ada.model;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Properties;
+import java.util.Set;
 
 import com.onpositive.nlp.lexer.EntityRecognizer;
 
@@ -21,6 +24,8 @@ public final class Comparative {
 		IN("in"),
 		NOT_IN("not_in"), NOT_MAX("not_max"), NOT_MIN("not_min"), NOT_NEAREST("!~=");
 		private final String name;
+		
+		
 		
 		Kind(String name){
 			this.name=name;
@@ -67,12 +72,86 @@ public final class Comparative {
 			}
 			return null;
 		}
+
+		public boolean op(Object property, Object comparisonTarget) {
+			Set<Object> set = toSet(comparisonTarget);
+			Number n=toNumber(property);
+			Number n2=toNumber(comparisonTarget);
+			switch (this) {
+			case IN:
+				if (property instanceof Collection){
+					Collection<?>m=(Collection<?>) property;
+					for (Object z:m){
+						if (set.contains(z)){
+							return true;
+						}
+					}
+					return false;
+				}
+				else return set.contains(property);
+			case NOT_IN:
+				if (property instanceof Collection){
+					Collection<?>m=(Collection<?>) property;
+					for (Object z:m){
+						if (set.contains(z)){
+							return false;
+						}
+					}
+					return true;
+				}
+				return !set.contains(property);	
+			case EQUAL:
+				if (property==null){
+					property=n;
+					//return comparisonTarget==null;
+				}
+				return property.equals(comparisonTarget)||n.equals(n2);
+			case LESS:
+				return n.doubleValue()<n2.doubleValue();
+			case LESS_EQ:
+				return n.doubleValue()<=n2.doubleValue();
+			case MAX:
+			case MIN:
+			case MORE:
+				return n.doubleValue()>n2.doubleValue();
+			case MORE_EQ:
+				return n.doubleValue()>=n2.doubleValue();
+			case NEAREST:
+			case NOT_EQUAL:
+				return !property.equals(comparisonTarget);
+			case NOT_MAX:
+			case NOT_MIN:
+			case NOT_NEAREST:
+			default:
+				break;
+			}
+			throw new UnsupportedOperationException();
+			
+		}
+
+		private Number toNumber(Object property) {
+			if (property instanceof Number){
+				return (Number) property;
+			}
+			if (property instanceof Collection){
+				Collection<?>c=(Collection<?>) property;
+				return c.size();
+			}
+			return 0;
+		}
 	}
 	
 	protected final Kind operation;
 	
 	public Kind getOperation() {
 		return operation;
+	}
+
+	public static Set<Object> toSet(Object comparisonTarget) {
+		if (comparisonTarget instanceof Set<?>){
+			return (Set<Object>) comparisonTarget;
+		}
+		return Collections.singleton(comparisonTarget);
 	}
 
 	protected final String text;

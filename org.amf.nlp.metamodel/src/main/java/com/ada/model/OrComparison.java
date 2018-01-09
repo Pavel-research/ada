@@ -4,8 +4,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.ada.model.conditions.IHasDomain;
 import com.onpositive.clauses.IComparison;
+import com.onpositive.clauses.IContext;
 import com.onpositive.model.IProperty;
 import com.onpositive.model.IType;
 
@@ -84,6 +84,16 @@ public class OrComparison implements IComparison{
 	@Override
 	public List<IProperty> usedProperties() {
 		return Collections.emptyList();
+	}
+
+	@Override
+	public boolean match(Object property, IContext ct) {
+		for (Comparison c:cm){
+			if (c.match(property, ct)){
+				return true;
+			}
+		}
+		return false;
 	}
 
 }

@@ -13,5 +13,6 @@ public interface IProperty extends INamed{
 	default boolean hasCompatibleRange(IType t){
 		return this.range().isSubtypeOf(t);
 	}
-	
+
+	boolean multiValue();
 }

@@ -11,6 +11,14 @@ public class JoinProperty implements IProperty{
 
 	protected List<IProperty>path;
 
+	public List<IProperty> getPath() {
+		return path;
+	}
+
+	public void setPath(List<IProperty> path) {
+		this.path = path;
+	}
+
 	public JoinProperty(List<IProperty> path) {
 		super();
 		this.path = path;
@@ -45,9 +53,17 @@ public class JoinProperty implements IProperty{
 				min=c;
 			}
 		}
-		return min;
+		return min+1;
 	}
 
-	
+	@Override
+	public String toString() {
+		return "join("+path+")";
+	}
+
+	@Override
+	public boolean multiValue() {
+		return path.stream().anyMatch(x->x.multiValue());
+	}
 
 }

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.ada.metamodel.EntityClass;
+import org.ada.metamodel.Property;
 import org.ada.metamodel.TypedStore;
 import org.ada.metamodel.Universe;
 import org.ada.metamodel.VocabularyLoader;
@@ -22,6 +24,7 @@ import com.ada.model.Context;
 import com.ada.model.GenericTime;
 import com.ada.model.IParsedEntity;
 import com.ada.model.Preposition;
+import com.ada.model.PropertyValue;
 import com.ada.model.SimpleDisambiguator;
 import com.onpositive.clauses.ISelector;
 import com.onpositive.clauses.impl.AllInstancesOf;
@@ -61,29 +64,55 @@ public class CoreEngine {
 			v.classes().forEach(c -> {
 				c.allProperties().forEach(p -> {
 					if (p.name().equals(k)) {
-						PropertyMeta propertyMeta = loadAs.properties.get(k);
-						List<String> sameAs = propertyMeta.getSameAs();
-						if (sameAs != null) {
-							sameAs.forEach(sa -> {
-								recognizer.addEntity(sa, p);
-							});
-						}
-						List<String> related = propertyMeta.getRelated();
-						if (related != null) {
-							related.forEach(r -> {
-								Optional<IProperty> relatedProperty = c.property(r);
-								if (relatedProperty.isPresent()) {
-									((org.ada.metamodel.Property) p).recordRelated(relatedProperty.get());
-								}
-							});
-						}
+						initFromMeta(loadAs, k, c, (Property)p);
+						
 					}
 				});
 			});
 		});
-
+		loadAs.classes.keySet().forEach(k->{
+			EntityClass clazz = (EntityClass) v.getClass(k);
+			ClassMeta classMeta = loadAs.classes.get(k);
+			if (classMeta.getUrlContainedIn()!=null){
+				classMeta.getUrlContainedIn().forEach(cn->{
+					EntityClass class1 = (EntityClass) v.getClass(cn);
+					class1.recordContained(clazz);
+				});
+			}
+		});
 		recognizer.innerEnd("them", Builtins.ALLMATCH);
 
+	}
+
+	private void initFromMeta(Meta loadAs, String k, IClass c, Property p) {
+		PropertyMeta propertyMeta = loadAs.properties.get(k);
+		List<String> sameAs = propertyMeta.getSameAs();
+		if (sameAs != null) {
+			sameAs.forEach(sa -> {
+				recognizer.addEntity(sa, p);
+			});
+		}
+		if (!propertyMeta.isMultiValue()){
+			p.setMultiValue(false);
+		}
+		if (propertyMeta.getGetAs()!=null){
+			p.setStoreId(propertyMeta.getGetAs());
+		}
+		List<String> related = propertyMeta.getRelated();
+		if (related != null) {
+			related.forEach(r -> {
+				Optional<IProperty> relatedProperty = c.property(r);
+				if (relatedProperty.isPresent()) {
+					 p.recordRelated(relatedProperty.get());
+				}
+			});
+		}
+		if (propertyMeta.isRecognizeValues()){
+			LinkedHashSet<Object> execute = new LinkedHashSet<>(store.execute(new AllInstancesOf(c).map(p)));
+			for (Object m:execute){
+				recognizer.innerEnd(m.toString(), new PropertyValue(m,p));
+			}			
+		}
 	}
 
 	public void addSynonims() {
@@ -173,12 +202,12 @@ public class CoreEngine {
 						.filter(v -> v.stream().filter(va -> va instanceof ISelector).findAny().isPresent())
 						.collect(Collectors.toList());
 				if (!collect.isEmpty()) {
-					return new ParsedQuery(new ArrayList<>(simpleDisambiguator.finalDisambig(collect)));
+					return new ParsedQuery(text,this,new ArrayList<>(simpleDisambiguator.finalDisambig(collect)));
 				}
 			}
-			return new ParsedQuery(new ArrayList<>(simpleDisambiguator.finalDisambig(gresults)));
+			return new ParsedQuery(text,this,new ArrayList<>(simpleDisambiguator.finalDisambig(gresults)));
 		}
-		return new ParsedQuery(new ArrayList<>(simpleDisambiguator.finalDisambig(results)));
+		return new ParsedQuery(text,this,new ArrayList<>(simpleDisambiguator.finalDisambig(results)));
 	}
 
 	private List<Object> toSelectors(List<Object> seq) {
@@ -217,5 +246,9 @@ public class CoreEngine {
 
 	public static CoreEngine getDebugEngine() throws IOException {
 		return new CoreEngine(TypedStore.getDebugInstance());
+	}
+
+	public ITypedStore getStore() {
+		return store;		
 	}
 }

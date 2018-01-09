@@ -43,4 +43,9 @@ public class NumberProperty implements IProperty{
 	public int complexity() {
 		return ps.complexity();
 	}
+
+	@Override
+	public boolean multiValue() {
+		return false;
+	}
 }

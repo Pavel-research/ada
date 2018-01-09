@@ -42,4 +42,10 @@ public class TypedEntity implements ITypedEntity{
 	public String kind() {
 		return clazz.id;
 	}
+
+	@Override
+	public Object property(String path) {
+		
+		return entity.property(path);
+	}
 }
